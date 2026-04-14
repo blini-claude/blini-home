@@ -5,6 +5,8 @@ import { ProductCarousel } from "@/components/storefront/product-carousel";
 import { PromoCards } from "@/components/storefront/promo-cards";
 import { DeliveryInfo } from "@/components/storefront/delivery-info";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const [newArrivals, bestSellers] = await Promise.all([
     getNewArrivals(12),
