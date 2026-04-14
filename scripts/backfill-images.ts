@@ -94,14 +94,31 @@ async function main() {
           if (!Array.isArray(products) || products.length === 0) break;
 
           for (const p of products) {
-            const sourceId = String(p.id);
             const images = (p.images || []).map((img: any) => img.src || img.thumbnail).filter(Boolean);
             if (images.length === 0) continue;
 
-            const existing = await db.product.findFirst({
-              where: { sourceStore: store, sourceId },
+            // Match by permalink/sourceUrl since HTML scraper uses URL slug as sourceId
+            const permalink = p.permalink || `${baseUrl}/product/${p.slug}`;
+            let existing = await db.product.findFirst({
+              where: { sourceStore: store, sourceUrl: permalink },
               select: { id: true, images: true, thumbnail: true },
             });
+
+            // Also try matching by numeric ID (in case API scraper was used)
+            if (!existing) {
+              existing = await db.product.findFirst({
+                where: { sourceStore: store, sourceId: String(p.id) },
+                select: { id: true, images: true, thumbnail: true },
+              });
+            }
+
+            // Also try matching by slug
+            if (!existing && p.slug) {
+              existing = await db.product.findFirst({
+                where: { sourceStore: store, sourceId: p.slug },
+                select: { id: true, images: true, thumbnail: true },
+              });
+            }
 
             if (existing && existing.images.length === 0) {
               await db.product.update({
