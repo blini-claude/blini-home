@@ -10,7 +10,14 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "setup:meili": "npx tsx scripts/setup-meilisearch.ts",
-    "seed": "npx tsx scripts/seed.ts"
+    "seed": "npx tsx scripts/seed.ts",
+    "sync": "npx tsx scripts/run-sync.ts",
+    "sync:shporta": "npx tsx scripts/run-sync.ts shporta",
+    "sync:tregu": "npx tsx scripts/run-sync.ts tregu",
+    "sync:benny": "npx tsx scripts/run-sync.ts benny",
+    "worker:product-sync": "npx tsx scripts/workers/product-sync-worker.ts",
+    "worker:image-sync": "npx tsx scripts/workers/image-sync-worker.ts",
+    "worker:price-sync": "npx tsx scripts/workers/price-sync-worker.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.7.0",
