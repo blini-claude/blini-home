@@ -1,0 +1,166 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Product {
+  id             String   @id @default(cuid())
+  sourceStore    String
+  sourceId       String
+  sourceUrl      String
+  title          String
+  slug           String   @unique
+  description    String?
+  price          Decimal  @db.Decimal(10, 2)
+  compareAtPrice Decimal? @db.Decimal(10, 2)
+  images         String[]
+  thumbnail      String?
+  category       String
+  stock          Int      @default(0)
+  isActive       Boolean  @default(true)
+  isFeatured     Boolean  @default(false)
+  syncedAt       DateTime @default(now())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  collections   ProductCollection[]
+  orderItems    OrderItem[]
+  wishlistItems WishlistItem[]
+
+  @@unique([sourceStore, sourceId])
+  @@index([category])
+  @@index([isActive])
+  @@index([slug])
+}
+
+model Collection {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String?
+  image       String?
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  products ProductCollection[]
+
+  @@index([slug])
+  @@index([isActive, sortOrder])
+}
+
+model ProductCollection {
+  productId    String
+  collectionId String
+
+  product    Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  collection Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+
+  @@id([productId, collectionId])
+}
+
+model Order {
+  id            String   @id @default(cuid())
+  orderNumber   String   @unique
+  status        String   @default("pending")
+  customerName  String
+  customerPhone String
+  customerEmail String?
+  city          String
+  address       String
+  notes         String?
+  subtotal      Decimal  @db.Decimal(10, 2)
+  deliveryFee   Decimal  @db.Decimal(10, 2)
+  total         Decimal  @db.Decimal(10, 2)
+  paymentMethod String   @default("COD")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  items      OrderItem[]
+  customer   Customer?   @relation(fields: [customerId], references: [id])
+  customerId String?
+
+  @@index([status])
+  @@index([orderNumber])
+  @@index([createdAt])
+  @@index([customerPhone])
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  quantity  Int
+  price     Decimal @db.Decimal(10, 2)
+
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId   String
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+
+  @@index([orderId])
+}
+
+model Customer {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  phone        String?
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  addresses Address[]
+  orders    Order[]
+  wishlist  WishlistItem[]
+
+  @@index([email])
+  @@index([phone])
+}
+
+model Address {
+  id        String  @id @default(cuid())
+  label     String?
+  city      String
+  address   String
+  isDefault Boolean @default(false)
+
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerId String
+
+  @@index([customerId])
+}
+
+model WishlistItem {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerId String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId  String
+
+  @@unique([customerId, productId])
+}
+
+model SyncLog {
+  id               String    @id @default(cuid())
+  sourceStore      String
+  status           String    @default("running")
+  productsAdded    Int       @default(0)
+  productsUpdated  Int       @default(0)
+  pricesChanged    Int       @default(0)
+  imagesDownloaded Int       @default(0)
+  errors           String[]
+  startedAt        DateTime  @default(now())
+  completedAt      DateTime?
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
