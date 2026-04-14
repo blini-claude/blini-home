@@ -57,19 +57,53 @@ export default async function CollectionPage({
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex justify-center gap-2 mt-10">
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+          {pageNum > 1 && (
             <Link
-              key={p}
-              href={`/koleksion/${slug}?sort=${sort}&page=${p}`}
-              className={`w-10 h-10 flex items-center justify-center text-sm font-medium border ${
-                p === pageNum
-                  ? "bg-text text-white border-text"
-                  : "border-border hover:bg-card-bg"
-              }`}
+              href={`/koleksion/${slug}?sort=${sort}&page=${pageNum - 1}`}
+              className="w-10 h-10 flex items-center justify-center text-sm font-medium border border-border hover:bg-card-bg"
             >
-              {p}
+              ‹
             </Link>
-          ))}
+          )}
+          {(() => {
+            const pages: (number | "...")[] = [];
+            if (totalPages <= 7) {
+              for (let i = 1; i <= totalPages; i++) pages.push(i);
+            } else {
+              pages.push(1);
+              if (pageNum > 3) pages.push("...");
+              for (let i = Math.max(2, pageNum - 1); i <= Math.min(totalPages - 1, pageNum + 1); i++) {
+                pages.push(i);
+              }
+              if (pageNum < totalPages - 2) pages.push("...");
+              pages.push(totalPages);
+            }
+            return pages.map((p, idx) =>
+              p === "..." ? (
+                <span key={`dots-${idx}`} className="w-10 h-10 flex items-center justify-center text-sm text-text-secondary">…</span>
+              ) : (
+                <Link
+                  key={p}
+                  href={`/koleksion/${slug}?sort=${sort}&page=${p}`}
+                  className={`w-10 h-10 flex items-center justify-center text-sm font-medium border ${
+                    p === pageNum
+                      ? "bg-text text-white border-text"
+                      : "border-border hover:bg-card-bg"
+                  }`}
+                >
+                  {p}
+                </Link>
+              )
+            );
+          })()}
+          {pageNum < totalPages && (
+            <Link
+              href={`/koleksion/${slug}?sort=${sort}&page=${pageNum + 1}`}
+              className="w-10 h-10 flex items-center justify-center text-sm font-medium border border-border hover:bg-card-bg"
+            >
+              ›
+            </Link>
+          )}
         </div>
       )}
     </div>
