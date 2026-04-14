@@ -2,14 +2,16 @@ import Link from "next/link";
 
 const NAV_ITEMS = [
   { label: "Të reja", href: "/koleksion/te-rejat" },
-  { label: "Më të shitura", href: "/koleksion/me-te-shitura" },
-  { label: "Shtëpi & Kuzhinë", href: "/koleksion/shtepi-kuzhine" },
+  { label: "Bestseller", href: "/koleksion/me-te-shitura" },
+  { label: "Shtëpi", href: "/koleksion/shtepi-kuzhine" },
+  { label: "Dhurata", href: "/koleksion/dhurata" },
+  { label: "Lodra & Lojëra", href: "/koleksion/femije-lodra" },
   { label: "Teknologji", href: "/koleksion/teknologji" },
-  { label: "Fëmijë & Lodra", href: "/koleksion/femije-lodra" },
-  { label: "Bukuri & Kujdes", href: "/koleksion/bukuri-kujdes" },
-  { label: "Sporte", href: "/koleksion/sporte-aktivitete" },
-  { label: "Veshje & Aksesore", href: "/koleksion/veshje-aksesore" },
-  { label: "Nën €10 — Oferta!", href: "/koleksion/nen-10", isPromo: true },
+  { label: "Fëmijë", href: "/koleksion/femije" },
+  { label: "Bukuri", href: "/koleksion/bukuri-kujdes" },
+  { label: "Aksesore", href: "/koleksion/veshje-aksesore" },
+  { label: "Shiko të gjitha", href: "/koleksion/te-gjitha" },
+  { label: "Oferta - deri 50%", href: "/koleksion/oferta", isPromo: true },
 ];
 
 export function Navigation() {
@@ -21,8 +23,10 @@ export function Navigation() {
             <Link
               key={item.href}
               href={item.href}
-              className={`whitespace-nowrap px-3 py-2.5 text-[15px] font-medium transition-colors hover:text-accent ${
-                item.isPromo ? "text-sale font-semibold" : "text-text"
+              className={`whitespace-nowrap px-3 py-2.5 text-[14px] font-medium transition-colors hover:underline ${
+                item.isPromo
+                  ? "text-[#E31B23] font-semibold"
+                  : "text-text hover:text-text"
               }`}
             >
               {item.label}

@@ -23,14 +23,14 @@ export function AddToCartButton({
         <div className="flex items-center border border-border">
           <button
             onClick={() => setQuantity(Math.max(1, quantity - 1))}
-            className="w-10 h-10 flex items-center justify-center text-lg"
+            className="w-10 h-10 flex items-center justify-center text-lg hover:bg-card-bg transition-colors"
           >
             −
           </button>
           <span className="w-10 text-center text-sm font-medium">{quantity}</span>
           <button
             onClick={() => setQuantity(quantity + 1)}
-            className="w-10 h-10 flex items-center justify-center text-lg"
+            className="w-10 h-10 flex items-center justify-center text-lg hover:bg-card-bg transition-colors"
           >
             +
           </button>
@@ -49,7 +49,7 @@ export function AddToCartButton({
           });
           setQuantity(1);
         }}
-        className="w-full bg-text text-white py-3.5 rounded-[7px] text-[15px] font-semibold hover:bg-text/90 transition-colors"
+        className="w-full bg-[#1A1A1A] text-white py-4 rounded-[5px] text-base font-semibold hover:bg-[#1A1A1A]/90 transition-colors"
       >
         Shto në shportë — €{(product.price * quantity).toFixed(2)}
       </button>

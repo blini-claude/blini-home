@@ -16,14 +16,14 @@ export function PromoCards({ cards }: { cards: [PromoCard, PromoCard] }) {
             <Link
               key={card.href}
               href={card.href}
-              className="relative block overflow-hidden"
-              style={{ aspectRatio: "4/3" }}
+              className="relative block overflow-hidden group"
+              style={{ aspectRatio: "16/9" }}
             >
-              <div className={`absolute inset-0 ${card.gradient}`} />
+              <div className={`absolute inset-0 ${card.gradient} group-hover:scale-105 transition-transform duration-500`} />
               <div className="relative h-full flex flex-col justify-end p-6">
-                <h3 className="text-white text-2xl font-semibold tracking-tight">{card.title}</h3>
+                <h3 className="text-white text-2xl font-bold tracking-tight">{card.title}</h3>
                 <p className="text-white/80 text-sm mt-1">{card.subtitle}</p>
-                <span className="mt-3 inline-flex w-fit bg-white text-text px-5 py-2 rounded-full text-sm font-semibold">
+                <span className="mt-3 inline-flex w-fit bg-white text-text px-5 py-2 rounded-[5px] text-sm font-semibold">
                   Zbulo
                 </span>
               </div>

@@ -14,42 +14,53 @@ export function Header() {
   return (
     <>
       <header className="bg-white border-b border-border sticky top-0 z-40">
-        <div className="max-w-[1400px] mx-auto px-4 h-14 flex items-center justify-between">
-          {/* Left: hamburger */}
-          <button
-            onClick={() => setMobileMenuOpen(true)}
-            className="lg:hidden p-2 -ml-2"
-            aria-label="Menu"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M3 12h18M3 6h18M3 18h18" />
-            </svg>
-          </button>
+        <div className="max-w-[1400px] mx-auto px-4 h-16 flex items-center">
+          {/* Left: Hamburger + Menu text (desktop) / Hamburger only (mobile) */}
+          <div className="flex items-center gap-6 flex-shrink-0">
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              className="flex items-center gap-1.5 p-1 -ml-1"
+              aria-label="Menu"
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M3 12h18M3 6h18M3 18h18" />
+              </svg>
+              <span className="hidden lg:inline text-sm font-medium text-text">Menu</span>
+            </button>
+          </div>
 
-          {/* Center: logo */}
-          <Link href="/" className="absolute left-1/2 -translate-x-1/2 lg:static lg:translate-x-0">
-            <span className="text-xl font-semibold tracking-tight text-text">BLINI HOME</span>
-          </Link>
+          {/* Center: Logo */}
+          <div className="flex-1 flex justify-center lg:justify-start lg:flex-none lg:ml-8">
+            <Link href="/" className="lg:mr-auto">
+              <span className="text-[22px] font-bold tracking-tight text-text">BLINI HOME</span>
+            </Link>
+          </div>
 
-          {/* Desktop search bar */}
-          <div className="hidden lg:flex flex-1 max-w-xl mx-8">
-            <form action="/kerko" className="w-full relative">
+          {/* Desktop: Search bar center-right */}
+          <div className="hidden lg:flex flex-1 justify-center max-w-xl mx-6">
+            <form action="/kerko" className="w-full relative flex">
               <input
                 type="text"
                 name="q"
                 placeholder="Kërko produkte..."
-                className="w-full h-10 pl-10 pr-4 rounded-full bg-search-bg text-sm outline-none focus:ring-2 focus:ring-accent"
+                className="w-full h-10 pl-4 pr-12 bg-search-bg border border-search-border text-sm outline-none focus:ring-1 focus:ring-search-border rounded-[5px]"
               />
-              <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.35-4.35" />
-              </svg>
+              <button
+                type="submit"
+                className="absolute right-0 top-0 h-10 w-10 flex items-center justify-center bg-accent rounded-r-[5px]"
+                aria-label="Kërko"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.35-4.35" />
+                </svg>
+              </button>
             </form>
           </div>
 
-          {/* Right: icons */}
-          <div className="flex items-center gap-1">
-            {/* Mobile search */}
+          {/* Right: Icons */}
+          <div className="flex items-center gap-1 flex-shrink-0">
+            {/* Mobile search toggle */}
             <button
               onClick={() => setSearchOpen(!searchOpen)}
               className="lg:hidden p-2"
@@ -61,9 +72,24 @@ export function Header() {
               </svg>
             </button>
 
-            {/* Cart */}
+            {/* Account icon (desktop) */}
+            <Link href="/llogaria" className="hidden lg:flex p-2" aria-label="Llogaria">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M5.5 21a6.5 6.5 0 0 1 13 0" />
+              </svg>
+            </Link>
+
+            {/* Wishlist heart icon (desktop) */}
+            <button className="hidden lg:flex p-2" aria-label="Lista e dëshirave">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+              </svg>
+            </button>
+
+            {/* Cart - shopping bag */}
             <button onClick={openCart} className="p-2 relative" aria-label="Shporta">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
                 <path d="M3 6h18" />
                 <path d="M16 10a4 4 0 0 1-8 0" />
@@ -80,18 +106,24 @@ export function Header() {
         {/* Mobile search bar (expandable) */}
         {searchOpen && (
           <div className="lg:hidden px-4 pb-3">
-            <form action="/kerko" className="relative">
+            <form action="/kerko" className="relative flex">
               <input
                 type="text"
                 name="q"
                 placeholder="Kërko produkte..."
                 autoFocus
-                className="w-full h-10 pl-10 pr-4 rounded-full bg-search-bg text-sm outline-none"
+                className="w-full h-10 pl-4 pr-12 bg-search-bg border border-search-border text-sm outline-none rounded-[5px]"
               />
-              <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.35-4.35" />
-              </svg>
+              <button
+                type="submit"
+                className="absolute right-0 top-0 h-10 w-10 flex items-center justify-center bg-accent rounded-r-[5px]"
+                aria-label="Kërko"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.35-4.35" />
+                </svg>
+              </button>
             </form>
           </div>
         )}

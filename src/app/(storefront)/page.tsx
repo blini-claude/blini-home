@@ -31,13 +31,13 @@ export default async function HomePage() {
             title: "Ide për Dhurata",
             subtitle: "Gjej dhuratën perfekte për të dashurit tuaj",
             href: "/koleksion/te-rejat",
-            gradient: "bg-gradient-to-br from-[#6767A7] to-[#303061]",
+            gradient: "bg-gradient-to-br from-[#B8C6A8] to-[#8FA876]",
           },
           {
             title: "Gjithçka nën €10",
             subtitle: "Produkte cilësore me çmime të ulëta",
             href: "/koleksion/nen-10",
-            gradient: "bg-gradient-to-br from-[#E83800] to-[#DC3545]",
+            gradient: "bg-gradient-to-br from-[#E8A87C] to-[#D68C5E]",
           },
         ]}
       />
@@ -54,13 +54,13 @@ export default async function HomePage() {
             title: "Teknologji & Gadgets",
             subtitle: "Pajisje smart për çdo ditë",
             href: "/koleksion/teknologji",
-            gradient: "bg-gradient-to-br from-[#1a1a2e] to-[#16213e]",
+            gradient: "bg-gradient-to-br from-[#6B7B8D] to-[#4A5568]",
           },
           {
             title: "Fëmijë & Familje",
             subtitle: "Lodra, kujdes dhe gjithçka për të vegjlit",
             href: "/koleksion/femije-lodra",
-            gradient: "bg-gradient-to-br from-[#2d6a4f] to-[#40916c]",
+            gradient: "bg-gradient-to-br from-[#A8D5BA] to-[#7CB899]",
           },
         ]}
       />

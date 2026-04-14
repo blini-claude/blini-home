@@ -12,38 +12,50 @@ export function ProductCard({ product }: { product: Product }) {
   const isOnSale = compareAt && compareAt > price;
 
   return (
-    <div className="group w-[180px] sm:w-[220px] flex-shrink-0">
-      {/* Image area — no border-radius, 5:7 aspect ratio */}
-      <Link href={`/produkt/${product.slug}`} className="block relative" style={{ aspectRatio: "5/7" }}>
+    <div className="group">
+      {/* Image area — square 1:1, no border-radius */}
+      <Link href={`/produkt/${product.slug}`} className="block relative aspect-square">
         <div className="w-full h-full bg-card-bg">
           {product.thumbnail ? (
             <Image
               src={product.thumbnail}
               alt={product.title}
               fill
-              sizes="220px"
-              className="object-cover"
+              sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              className="object-contain"
             />
           ) : product.images[0] ? (
             <Image
               src={product.images[0]}
               alt={product.title}
               fill
-              sizes="220px"
-              className="object-cover"
+              sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              className="object-contain"
             />
           ) : null}
         </div>
 
-        {/* Badges */}
+        {/* Pill badge top-left */}
         {isOnSale && (
-          <div className="absolute top-2 left-2 bg-sale-badge text-white text-[11px] font-bold w-14 h-14 rounded-full flex items-center justify-center">
-            OFERT
-          </div>
+          <span className="absolute top-2 left-2 bg-badge-sale text-white rounded-full px-3 py-1 text-xs font-bold">
+            OFERT&Euml;
+          </span>
         )}
 
-        {/* Quick add — appears on hover */}
-        <div className="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 p-2">
+        {/* Wishlist heart icon top-right */}
+        <button
+          type="button"
+          onClick={(e) => e.preventDefault()}
+          className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+          aria-label="Shto në listën e dëshirave"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+          </svg>
+        </button>
+
+        {/* "Shto ne shporte" button on hover — full width at bottom of image */}
+        <div className="absolute bottom-0 left-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
             onClick={(e) => {
               e.preventDefault();
@@ -56,27 +68,27 @@ export function ProductCard({ product }: { product: Product }) {
                 slug: product.slug,
               });
             }}
-            className="w-full bg-text text-white text-sm font-bold py-2 rounded-[7px]"
+            className="w-full bg-text text-white text-sm font-semibold py-2.5 rounded-[5px]"
           >
-            Shto në shportë
+            Shto n&euml; shport&euml;
           </button>
         </div>
       </Link>
 
-      {/* Info */}
-      <div className="mt-2">
+      {/* Product info */}
+      <div className="mt-3">
         <Link href={`/produkt/${product.slug}`}>
-          <h3 className="text-[15px] font-medium text-text line-clamp-2 leading-tight">
+          <h3 className="text-sm font-medium text-text line-clamp-2 leading-snug">
             {product.title}
           </h3>
         </Link>
         <div className="mt-1 flex items-baseline gap-2">
-          <span className={`text-xl font-bold tracking-tight ${isOnSale ? "text-sale" : "text-text"}`}>
-            €{price.toFixed(2)}
+          <span className={`text-base font-bold ${isOnSale ? "text-sale" : "text-text"}`}>
+            &euro;{price.toFixed(2)}
           </span>
           {isOnSale && (
             <span className="text-sm text-text-secondary line-through">
-              €{compareAt!.toFixed(2)}
+              &euro;{compareAt!.toFixed(2)}
             </span>
           )}
         </div>

@@ -25,7 +25,7 @@ export function CartDrawer() {
       <div className="absolute right-0 top-0 bottom-0 w-full max-w-md bg-white flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-border">
-          <h2 className="text-lg font-semibold">Shporta ({items.length})</h2>
+          <h2 className="text-lg font-bold">Shporta ({items.length})</h2>
           <button onClick={closeCart} className="p-1" aria-label="Mbyll">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M18 6 6 18M6 6l12 12" />
@@ -49,14 +49,15 @@ export function CartDrawer() {
             <div className="space-y-4">
               {items.map((item) => (
                 <div key={item.productId} className="flex gap-3">
-                  <div className="w-20 h-24 bg-card-bg flex-shrink-0">
+                  {/* Square thumbnail */}
+                  <div className="w-20 h-20 bg-card-bg flex-shrink-0">
                     {item.thumbnail && (
                       <Image
                         src={item.thumbnail}
                         alt={item.title}
                         width={80}
-                        height={96}
-                        className="w-full h-full object-cover"
+                        height={80}
+                        className="w-full h-full object-contain"
                       />
                     )}
                   </div>
@@ -68,18 +69,18 @@ export function CartDrawer() {
                     >
                       {item.title}
                     </Link>
-                    <p className="text-sm font-bold mt-1">€{item.price.toFixed(2)}</p>
+                    <p className="text-sm font-bold mt-1">{item.price.toFixed(2)}</p>
                     <div className="flex items-center gap-2 mt-2">
                       <button
                         onClick={() => updateQuantity(item.productId, item.quantity - 1)}
-                        className="w-7 h-7 border border-border flex items-center justify-center text-sm"
+                        className="w-7 h-7 border border-border flex items-center justify-center text-sm hover:bg-card-bg transition-colors"
                       >
                         −
                       </button>
-                      <span className="text-sm w-6 text-center">{item.quantity}</span>
+                      <span className="text-sm w-6 text-center font-medium">{item.quantity}</span>
                       <button
                         onClick={() => updateQuantity(item.productId, item.quantity + 1)}
-                        className="w-7 h-7 border border-border flex items-center justify-center text-sm"
+                        className="w-7 h-7 border border-border flex items-center justify-center text-sm hover:bg-card-bg transition-colors"
                       >
                         +
                       </button>
@@ -103,15 +104,15 @@ export function CartDrawer() {
         {/* Footer */}
         {items.length > 0 && (
           <div className="border-t border-border p-4 space-y-3">
-            <div className="flex justify-between text-base font-semibold">
+            <div className="flex justify-between text-base font-bold">
               <span>Nëntotali</span>
-              <span>€{subtotal.toFixed(2)}</span>
+              <span>{subtotal.toFixed(2)}</span>
             </div>
             <p className="text-xs text-text-secondary">Dërgimi llogaritet në hapin tjetër</p>
             <Link
               href="/porosia"
               onClick={closeCart}
-              className="block w-full bg-text text-white text-center py-3 rounded-[7px] text-[15px] font-semibold"
+              className="block w-full bg-[#1A1A1A] text-white text-center py-4 rounded-[5px] text-base font-semibold hover:bg-[#1A1A1A]/90 transition-colors"
             >
               Vazhdo me porosinë
             </Link>

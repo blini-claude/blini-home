@@ -12,11 +12,11 @@ export function AdminHeader({ title }: { title: string }) {
   }
 
   return (
-    <header className="h-14 bg-white border-b border-[#e5e7eb] flex items-center justify-between px-6">
-      <h1 className="text-lg font-semibold text-[#121212]">{title}</h1>
+    <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8">
+      <h1 className="text-lg font-semibold text-text">{title}</h1>
       <button
         onClick={handleLogout}
-        className="text-sm text-[#707070] hover:text-[#121212]"
+        className="text-sm text-text-secondary hover:text-text transition-colors cursor-pointer"
       >
         Sign out
       </button>

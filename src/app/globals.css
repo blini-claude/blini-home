@@ -1,21 +1,24 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* Flying Tiger Copenhagen Design Tokens */
   --color-bg: #FFFFFF;
-  --color-text: #121212;
+  --color-text: #1A1A1A;
   --color-text-secondary: #707070;
   --color-card-bg: #F5F5F5;
-  --color-border: #DADADA;
+  --color-border: #E5E5E5;
   --color-sale: #E83800;
   --color-sale-badge: #E31B23;
   --color-last-chance: #DC3545;
-  --color-accent: #6767A7;
-  --color-announcement: #000000;
-  --color-hero-btn: #F5F5F5;
-  --color-hero-btn-text: #303061;
-  --color-search-bg: #EBEBEB;
-  --color-delivery-bg: #F4F4F4;
+  --color-accent: #1A1A1A;
+  --color-announcement: #FFE8E0;
+  --color-announcement-text: #1A1A1A;
+  --color-green: #05A86B;
+  --color-search-bg: #FFFFFF;
+  --color-search-border: #1A1A1A;
+  --color-footer-bg: #F5F5F5;
+  --color-badge-new: #1A1A1A;
+  --color-badge-sale: #E31B23;
+  --color-badge-bestseller: #707070;
 
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 }

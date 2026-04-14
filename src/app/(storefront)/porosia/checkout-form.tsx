@@ -64,11 +64,13 @@ export function CheckoutForm() {
     );
   }
 
+  const inputClass = "w-full h-12 px-3 border border-border rounded-none text-sm outline-none focus:ring-1 focus:ring-text";
+
   return (
     <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-5 gap-8">
       {/* Form fields */}
       <div className="lg:col-span-3 space-y-4">
-        <h2 className="text-xl font-semibold mb-2">Të dhënat e dërgesës</h2>
+        <h2 className="text-xl font-bold mb-2">Të dhënat e dërgesës</h2>
 
         <div>
           <label htmlFor="name" className="block text-sm font-medium mb-1">Emri i plotë *</label>
@@ -76,7 +78,7 @@ export function CheckoutForm() {
             id="name"
             name="name"
             required
-            className="w-full h-11 px-3 border border-border rounded text-sm outline-none focus:ring-2 focus:ring-accent"
+            className={inputClass}
           />
         </div>
 
@@ -88,7 +90,7 @@ export function CheckoutForm() {
             type="tel"
             required
             placeholder="+383 4X XXX XXX"
-            className="w-full h-11 px-3 border border-border rounded text-sm outline-none focus:ring-2 focus:ring-accent"
+            className={inputClass}
           />
         </div>
 
@@ -98,7 +100,7 @@ export function CheckoutForm() {
             id="email"
             name="email"
             type="email"
-            className="w-full h-11 px-3 border border-border rounded text-sm outline-none focus:ring-2 focus:ring-accent"
+            className={inputClass}
           />
         </div>
 
@@ -108,7 +110,7 @@ export function CheckoutForm() {
             id="city"
             name="city"
             required
-            className="w-full h-11 px-3 border border-border rounded text-sm outline-none focus:ring-2 focus:ring-accent bg-white"
+            className={`${inputClass} bg-white`}
           >
             <option value="">Zgjidhni qytetin</option>
             <option value="Prishtinë">Prishtinë</option>
@@ -128,7 +130,7 @@ export function CheckoutForm() {
             name="address"
             required
             placeholder="Rruga, numri, kati..."
-            className="w-full h-11 px-3 border border-border rounded text-sm outline-none focus:ring-2 focus:ring-accent"
+            className={inputClass}
           />
         </div>
 
@@ -138,7 +140,7 @@ export function CheckoutForm() {
             id="notes"
             name="notes"
             rows={3}
-            className="w-full px-3 py-2 border border-border rounded text-sm outline-none focus:ring-2 focus:ring-accent resize-none"
+            className="w-full px-3 py-3 border border-border rounded-none text-sm outline-none focus:ring-1 focus:ring-text resize-none"
           />
         </div>
 
@@ -150,13 +152,13 @@ export function CheckoutForm() {
       {/* Order summary */}
       <div className="lg:col-span-2">
         <div className="bg-card-bg p-6 sticky top-20">
-          <h2 className="text-lg font-semibold mb-4">Përmbledhja e porosisë</h2>
+          <h2 className="text-lg font-bold mb-4">Përmbledhja e porosisë</h2>
 
           <div className="space-y-3 mb-4">
             {items.map((item) => (
               <div key={item.productId} className="flex justify-between text-sm">
-                <span className="line-clamp-1 mr-2">{item.title} × {item.quantity}</span>
-                <span className="font-medium flex-shrink-0">€{(item.price * item.quantity).toFixed(2)}</span>
+                <span className="line-clamp-1 mr-2">{item.title} x {item.quantity}</span>
+                <span className="font-medium flex-shrink-0">{(item.price * item.quantity).toFixed(2)}</span>
               </div>
             ))}
           </div>
@@ -164,7 +166,7 @@ export function CheckoutForm() {
           <div className="border-t border-border pt-3 space-y-2">
             <div className="flex justify-between text-sm">
               <span>Nëntotali</span>
-              <span>€{subtotal.toFixed(2)}</span>
+              <span>{subtotal.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span>Dërgimi</span>
@@ -172,18 +174,18 @@ export function CheckoutForm() {
             </div>
             <div className="flex justify-between text-base font-bold pt-2 border-t border-border">
               <span>Totali</span>
-              <span>€{total.toFixed(2)}</span>
+              <span>{total.toFixed(2)}</span>
             </div>
           </div>
 
           <p className="text-xs text-text-secondary mt-3 mb-4">
-            💰 Pagesa: Para në dorë (COD)
+            Pagesa: Para ne dore (COD)
           </p>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-text text-white py-3.5 rounded-[7px] text-[15px] font-semibold hover:bg-text/90 transition-colors disabled:opacity-50"
+            className="w-full bg-[#1A1A1A] text-white py-4 rounded-[5px] text-base font-semibold hover:bg-[#1A1A1A]/90 transition-colors disabled:opacity-50"
           >
             {loading ? "Duke dërguar..." : `Konfirmo Porosinë — €${total.toFixed(2)}`}
           </button>
