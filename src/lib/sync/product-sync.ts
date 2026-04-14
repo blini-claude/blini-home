@@ -107,14 +107,26 @@ async function processProduct(
   let images: string[] = [];
   let thumbnail: string | null = null;
 
-  if (downloadImages && scraped.images.length > 0) {
-    if (!existing || existing.images.length === 0) {
-      const imgResult = await downloadProductImages(scraped.images, slug);
-      images = imgResult.images;
-      thumbnail = imgResult.thumbnail;
-    } else {
+  if (scraped.images.length > 0) {
+    if (existing && existing.images.length > 0) {
+      // Keep existing images (local or remote)
       images = existing.images;
       thumbnail = existing.thumbnail;
+    } else if (downloadImages) {
+      // Try local download first
+      const imgResult = await downloadProductImages(scraped.images, slug);
+      if (imgResult.images.length > 0) {
+        images = imgResult.images;
+        thumbnail = imgResult.thumbnail;
+      } else {
+        // Download failed — use source URLs directly as fallback
+        images = scraped.images;
+        thumbnail = scraped.images[0];
+      }
+    } else {
+      // No download requested — use source URLs directly
+      images = scraped.images;
+      thumbnail = scraped.images[0];
     }
   }
 

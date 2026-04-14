@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "**.shporta.shop" },
       { protocol: "https", hostname: "**.tregu.shop" },
       { protocol: "https", hostname: "**.bennygroup.store" },
+      { protocol: "https", hostname: "cdn.shopify.com" },
     ],
   },
 };
