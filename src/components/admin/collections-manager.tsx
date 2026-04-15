@@ -14,14 +14,18 @@ interface CollectionRow {
   _count: { products: number };
 }
 
-export function CollectionsManager({ collections }: { collections: CollectionRow[] }) {
+export function CollectionsManager({
+  collections,
+}: {
+  collections: CollectionRow[];
+}) {
   const router = useRouter();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<CollectionRow | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
 
   async function handleDelete(id: string) {
-    if (!confirm("Delete this collection?")) return;
+    if (!confirm("Je i sigurt që dëshiron të fshish këtë koleksion?")) return;
     setDeleting(id);
     await fetch(`/api/admin/collections/${id}`, { method: "DELETE" });
     setDeleting(null);
@@ -31,73 +35,120 @@ export function CollectionsManager({ collections }: { collections: CollectionRow
   return (
     <>
       <div className="flex justify-between items-center mb-5">
-        <p className="text-sm text-text-secondary">{collections.length} collections</p>
+        <p className="text-[12px] text-[rgba(18,18,18,0.45)] font-semibold">
+          {collections.length} koleksione
+        </p>
         <button
-          onClick={() => { setEditing(null); setShowForm(true); }}
-          className="h-10 px-5 bg-text text-white rounded-[5px] text-sm font-semibold hover:bg-text/90 transition-colors cursor-pointer"
+          onClick={() => {
+            setEditing(null);
+            setShowForm(true);
+          }}
+          className="h-[40px] px-5 bg-[#062F35] text-white rounded-[8px] text-[12px] font-bold border-2 border-[#062F35] hover:bg-transparent hover:text-[#062F35] transition-colors cursor-pointer"
         >
-          + New Collection
+          + Koleksion i ri
         </button>
       </div>
 
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-gray-200 bg-gray-50">
-              <th className="text-left px-6 py-3 text-xs font-medium uppercase tracking-wider text-text-secondary">Order</th>
-              <th className="text-left px-6 py-3 text-xs font-medium uppercase tracking-wider text-text-secondary">Title</th>
-              <th className="text-left px-6 py-3 text-xs font-medium uppercase tracking-wider text-text-secondary">Slug</th>
-              <th className="text-left px-6 py-3 text-xs font-medium uppercase tracking-wider text-text-secondary">Products</th>
-              <th className="text-left px-6 py-3 text-xs font-medium uppercase tracking-wider text-text-secondary">Status</th>
-              <th className="text-left px-6 py-3 text-xs font-medium uppercase tracking-wider text-text-secondary">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {collections.map((col) => (
-              <tr key={col.id} className="hover:bg-gray-50 transition-colors">
-                <td className="px-6 py-4 text-text-secondary">{col.sortOrder}</td>
-                <td className="px-6 py-4 font-medium text-text">{col.title}</td>
-                <td className="px-6 py-4 text-text-secondary font-mono text-xs">{col.slug}</td>
-                <td className="px-6 py-4 text-text">{col._count.products}</td>
-                <td className="px-6 py-4">
-                  <span className={`text-xs px-2.5 py-1 rounded-full font-medium border ${
-                    col.isActive
-                      ? "bg-green-50 text-green-700 border-green-200"
-                      : "bg-gray-50 text-gray-500 border-gray-200"
-                  }`}>
-                    {col.isActive ? "Active" : "Inactive"}
-                  </span>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => { setEditing(col); setShowForm(true); }}
-                      className="text-sm text-text-secondary hover:text-text font-medium transition-colors cursor-pointer"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(col.id)}
-                      disabled={deleting === col.id}
-                      className="text-sm text-red-500 hover:text-red-700 font-medium transition-colors cursor-pointer"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </td>
+      {collections.length === 0 ? (
+        <div className="bg-white rounded-[12px] border border-[#E8E8E8] p-12 text-center">
+          <p className="text-[13px] text-[rgba(18,18,18,0.4)]">
+            Nuk ka koleksione ende
+          </p>
+        </div>
+      ) : (
+        <div className="bg-white rounded-[12px] border border-[#E8E8E8] overflow-hidden">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-[#F0F0F0]">
+                <th className="text-left text-[11px] font-bold text-[rgba(18,18,18,0.4)] uppercase tracking-wider px-5 py-3 w-[60px]">
+                  #
+                </th>
+                <th className="text-left text-[11px] font-bold text-[rgba(18,18,18,0.4)] uppercase tracking-wider px-5 py-3">
+                  Titulli
+                </th>
+                <th className="text-left text-[11px] font-bold text-[rgba(18,18,18,0.4)] uppercase tracking-wider px-5 py-3">
+                  Slug
+                </th>
+                <th className="text-center text-[11px] font-bold text-[rgba(18,18,18,0.4)] uppercase tracking-wider px-5 py-3">
+                  Produkte
+                </th>
+                <th className="text-center text-[11px] font-bold text-[rgba(18,18,18,0.4)] uppercase tracking-wider px-5 py-3">
+                  Statusi
+                </th>
+                <th className="text-right text-[11px] font-bold text-[rgba(18,18,18,0.4)] uppercase tracking-wider px-5 py-3">
+                  Veprime
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-        {collections.length === 0 && (
-          <p className="text-center py-12 text-sm text-text-secondary">No collections yet</p>
-        )}
-      </div>
+            </thead>
+            <tbody>
+              {collections.map((col) => (
+                <tr
+                  key={col.id}
+                  className="border-b border-[#F8F8F8] hover:bg-[#FAFBFC] transition-colors"
+                >
+                  <td className="px-5 py-3.5 text-[12px] text-[rgba(18,18,18,0.35)]">
+                    {col.sortOrder}
+                  </td>
+                  <td className="px-5 py-3.5">
+                    <span className="text-[13px] font-semibold text-[#062F35]">
+                      {col.title}
+                    </span>
+                  </td>
+                  <td className="px-5 py-3.5">
+                    <code className="text-[11px] text-[rgba(18,18,18,0.4)] bg-[#F5F5F5] px-2 py-0.5 rounded-[4px]">
+                      {col.slug}
+                    </code>
+                  </td>
+                  <td className="px-5 py-3.5 text-center">
+                    <span className="text-[11px] font-bold px-2 py-1 rounded-[4px] bg-[#F0F7F8] text-[#062F35]">
+                      {col._count.products}
+                    </span>
+                  </td>
+                  <td className="px-5 py-3.5 text-center">
+                    <span
+                      className={`text-[10px] font-bold px-2.5 py-1 rounded-[4px] ${
+                        col.isActive
+                          ? "bg-[#E8F5E9] text-[#2E7D32]"
+                          : "bg-[#F5F5F5] text-[rgba(18,18,18,0.35)]"
+                      }`}
+                    >
+                      {col.isActive ? "Aktiv" : "Joaktiv"}
+                    </span>
+                  </td>
+                  <td className="px-5 py-3.5 text-right">
+                    <div className="flex items-center gap-2 justify-end">
+                      <button
+                        onClick={() => {
+                          setEditing(col);
+                          setShowForm(true);
+                        }}
+                        className="text-[11px] font-bold text-[#062F35] hover:text-[#FFC334] transition-colors cursor-pointer bg-[#F5F5F5] hover:bg-[#F0F7F8] px-3 py-1.5 rounded-[6px]"
+                      >
+                        Ndrysho
+                      </button>
+                      <button
+                        onClick={() => handleDelete(col.id)}
+                        disabled={deleting === col.id}
+                        className="text-[11px] font-bold text-[rgba(18,18,18,0.3)] hover:text-[#C62828] transition-colors cursor-pointer"
+                      >
+                        Fshij
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {showForm && (
         <CollectionForm
           collection={editing || undefined}
-          onClose={() => { setShowForm(false); setEditing(null); }}
+          onClose={() => {
+            setShowForm(false);
+            setEditing(null);
+          }}
         />
       )}
     </>

@@ -24,20 +24,20 @@ export default async function ConfirmationPage({
         </svg>
       </div>
 
-      <h1 className="text-3xl font-semibold tracking-tight mb-2">Faleminderit!</h1>
+      <h1 className="text-3xl font-bold tracking-tight mb-2">Faleminderit!</h1>
       <p className="text-text-secondary text-lg mb-1">Porosia juaj u dërgua me sukses.</p>
       <p className="text-sm text-text-secondary mb-8">
         Numri i porosisë: <strong className="text-text">{order.orderNumber}</strong>
       </p>
 
       <div className="bg-card-bg p-6 text-left mb-8">
-        <h2 className="text-lg font-semibold mb-4">Detajet e porosisë</h2>
+        <h2 className="text-lg font-bold mb-4">Detajet e porosisë</h2>
 
         <div className="space-y-2 text-sm">
           {order.items.map((item) => (
             <div key={item.id} className="flex justify-between">
               <span>{item.product.title} × {item.quantity}</span>
-              <span className="font-medium">€{(Number(item.price) * item.quantity).toFixed(2)}</span>
+              <span className="font-bold">€{(Number(item.price) * item.quantity).toFixed(2)}</span>
             </div>
           ))}
         </div>
@@ -51,7 +51,7 @@ export default async function ConfirmationPage({
             <span>Dërgimi</span>
             <span>{Number(order.deliveryFee) === 0 ? "FALAS" : `€${Number(order.deliveryFee).toFixed(2)}`}</span>
           </div>
-          <div className="flex justify-between font-bold text-base pt-2 border-t border-border">
+          <div className="flex justify-between font-extrabold text-base pt-2 border-t border-border">
             <span>Totali</span>
             <span>€{Number(order.total).toFixed(2)}</span>
           </div>
@@ -59,7 +59,7 @@ export default async function ConfirmationPage({
       </div>
 
       <div className="bg-card-bg p-6 text-left mb-8">
-        <h2 className="text-lg font-semibold mb-3">Çfarë ndodh tani?</h2>
+        <h2 className="text-lg font-bold mb-3">Çfarë ndodh tani?</h2>
         <ol className="text-sm text-text-secondary space-y-2 list-decimal list-inside">
           <li>Do të kontaktoheni me telefon për konfirmimin e porosisë</li>
           <li>Porosia dërgohet brenda 1-3 ditëve pune</li>
@@ -75,7 +75,7 @@ export default async function ConfirmationPage({
 
       <Link
         href="/"
-        className="inline-block mt-8 bg-text text-white px-8 py-3 rounded-[7px] text-[15px] font-semibold"
+        className="inline-block mt-8 bg-[#062F35] text-white px-8 py-3 rounded-[8px] text-[15px] font-bold border-2 border-[#062F35] hover:bg-transparent hover:text-[#062F35] transition-colors"
       >
         Vazhdo blerjen
       </Link>

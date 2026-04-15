@@ -1,98 +1,87 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/contexts/cart-context";
 import type { Product } from "@prisma/client";
 
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({
+  product,
+  variant = "full",
+}: {
+  product: Product;
+  variant?: "full" | "minimal";
+}) {
   const { addItem } = useCart();
   const price = Number(product.price);
   const compareAt = product.compareAtPrice ? Number(product.compareAtPrice) : null;
   const isOnSale = compareAt && compareAt > price;
 
-  return (
-    <div className="group">
-      {/* Image area — square 1:1, no border-radius */}
-      <Link href={`/produkt/${product.slug}`} className="block relative aspect-square">
-        <div className="w-full h-full bg-card-bg">
-          {product.thumbnail ? (
-            <Image
-              src={product.thumbnail}
-              alt={product.title}
-              fill
-              sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-              className="object-contain"
-            />
-          ) : product.images[0] ? (
-            <Image
-              src={product.images[0]}
-              alt={product.title}
-              fill
-              sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-              className="object-contain"
-            />
-          ) : null}
-        </div>
+  const imgSrc = product.thumbnail || product.images[0] || null;
 
-        {/* Pill badge top-left */}
-        {isOnSale && (
-          <span className="absolute top-2 left-2 bg-badge-sale text-white rounded-full px-3 py-1 text-xs font-bold">
-            OFERT&Euml;
-          </span>
+  return (
+    <div className="group flex flex-col h-full">
+      {/* Image — fixed aspect ratio for uniform height */}
+      <Link
+        href={`/produkt/${product.slug}`}
+        className="block relative overflow-hidden rounded-[8px] bg-[#E8E8E8]"
+        style={{ aspectRatio: "3/5" }}
+        draggable={false}
+      >
+        {imgSrc && (
+          <img
+            src={imgSrc}
+            alt={product.title}
+            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 pointer-events-none"
+            draggable={false}
+            loading="lazy"
+          />
         )}
 
-        {/* Wishlist heart icon top-right */}
-        <button
-          type="button"
-          onClick={(e) => e.preventDefault()}
-          className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-          aria-label="Shto në listën e dëshirave"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-          </svg>
-        </button>
-
-        {/* "Shto ne shporte" button on hover — full width at bottom of image */}
-        <div className="absolute bottom-0 left-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              addItem({
-                productId: product.id,
-                quantity: 1,
-                price,
-                title: product.title,
-                thumbnail: product.thumbnail,
-                slug: product.slug,
-              });
-            }}
-            className="w-full bg-text text-white text-sm font-semibold py-2.5 rounded-[5px]"
-          >
-            Shto n&euml; shport&euml;
-          </button>
-        </div>
+        {/* Sale badge — only on sale items */}
+        {isOnSale && (
+          <span className="absolute top-2.5 left-2.5 bg-[#FFC334] text-[#062F35] text-[11px] font-bold px-2.5 py-1 rounded-[8px] leading-none">
+            -{Math.round(((compareAt! - price) / compareAt!) * 100)}%
+          </span>
+        )}
       </Link>
 
       {/* Product info */}
-      <div className="mt-3">
-        <Link href={`/produkt/${product.slug}`}>
-          <h3 className="text-sm font-medium text-text line-clamp-2 leading-snug">
-            {product.title}
+      <div className="mt-2.5 flex-1 flex flex-col">
+        <Link href={`/produkt/${product.slug}`} draggable={false}>
+          <h3 className="text-[15px] font-bold text-[#062F35] leading-[20px] line-clamp-1">
+            {product.title.split(/\s+/).slice(0, 3).join(" ")}
           </h3>
         </Link>
         <div className="mt-1 flex items-baseline gap-2">
-          <span className={`text-base font-bold ${isOnSale ? "text-sale" : "text-text"}`}>
-            &euro;{price.toFixed(2)}
+          <span className={`text-[15px] font-bold ${isOnSale ? "text-[#D4A017]" : "text-[#062F35]"}`}>
+            €{price.toFixed(2)}
           </span>
           {isOnSale && (
-            <span className="text-sm text-text-secondary line-through">
-              &euro;{compareAt!.toFixed(2)}
+            <span className="text-[13px] text-[rgba(18,18,18,0.4)] line-through">
+              €{compareAt!.toFixed(2)}
             </span>
           )}
         </div>
       </div>
+
+      {/* Add to bag — only in full variant (carousels) */}
+      {variant === "full" && (
+        <button
+          onClick={() => {
+            addItem({
+              productId: product.id,
+              quantity: 1,
+              price,
+              title: product.title,
+              thumbnail: product.thumbnail,
+              slug: product.slug,
+            });
+          }}
+          className="w-full mt-2 bg-[#062F35] text-white text-[13px] font-bold py-2 rounded-[8px] border-2 border-[#062F35] hover:bg-transparent hover:text-[#062F35] transition-colors cursor-pointer"
+        >
+          Shto në shportë
+        </button>
+      )}
     </div>
   );
 }

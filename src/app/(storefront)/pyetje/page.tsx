@@ -30,11 +30,11 @@ const FAQS = [
 export default function FAQPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-12">
-      <h1 className="text-3xl font-semibold tracking-tight mb-8">Pyetje të shpeshta</h1>
+      <h1 className="text-3xl font-bold tracking-tight mb-8">Pyetje të shpeshta</h1>
       <div className="space-y-6">
         {FAQS.map((faq, i) => (
           <div key={i} className="border-b border-border pb-6">
-            <h2 className="text-[17px] font-semibold mb-2">{faq.q}</h2>
+            <h2 className="text-[17px] font-bold mb-2">{faq.q}</h2>
             <p className="text-text-secondary text-[16px] leading-[1.8]">{faq.a}</p>
           </div>
         ))}

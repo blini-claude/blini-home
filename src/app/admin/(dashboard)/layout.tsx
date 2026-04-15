@@ -6,9 +6,9 @@ export default function AdminDashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-[#F8F9FA]">
       <Sidebar />
-      <div className="flex-1 ml-60">{children}</div>
+      <div className="flex-1 ml-[260px]">{children}</div>
     </div>
   );
 }

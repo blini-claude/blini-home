@@ -19,6 +19,7 @@ model Product {
   images         String[]
   thumbnail      String?
   category       String
+  tags           String[] @default([])
   stock          Int      @default(0)
   isActive       Boolean  @default(true)
   isFeatured     Boolean  @default(false)
@@ -161,6 +162,30 @@ model SyncLog {
 model AdminUser {
   id           String   @id @default(cuid())
   email        String   @unique
+  name         String   @default("Admin")
   passwordHash String
   createdAt    DateTime @default(now())
+}
+
+model SiteSettings {
+  id               String   @id @default("main")
+  heroSlides       Json     @default("[]")
+  announcementText String   @default("Dërgim falas për porosi mbi €30")
+  welcomeMessage   String   @default("Mirësevini në BLINI HOME!")
+  whatsappNumber   String   @default("+38344000000")
+  whatsappEnabled  Boolean  @default(true)
+  iziPostApiKey    String?
+  iziPostApiUrl    String   @default("https://api.izis-post.com")
+  footerText       String   @default("Produkte cilësore për shtëpinë")
+  updatedAt        DateTime @updatedAt
+}
+
+model Subscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@index([isActive])
+  @@index([createdAt])
 }

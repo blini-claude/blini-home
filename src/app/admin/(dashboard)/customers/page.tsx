@@ -9,7 +9,7 @@ export default async function AdminCustomersPage({
 }) {
   const { search } = await searchParams;
 
-  const where: any = {};
+  const where: Record<string, unknown> = {};
   if (search) {
     where.OR = [
       { customerName: { contains: search, mode: "insensitive" } },
@@ -29,14 +29,17 @@ export default async function AdminCustomersPage({
     orderBy: { createdAt: "desc" },
   });
 
-  const byPhone = new Map<string, {
-    name: string;
-    phone: string;
-    city: string;
-    orderCount: number;
-    totalSpent: number;
-    lastOrder: string;
-  }>();
+  const byPhone = new Map<
+    string,
+    {
+      name: string;
+      phone: string;
+      city: string;
+      orderCount: number;
+      totalSpent: number;
+      lastOrder: string;
+    }
+  >();
 
   for (const order of orders) {
     const existing = byPhone.get(order.customerPhone);
@@ -55,24 +58,73 @@ export default async function AdminCustomersPage({
     }
   }
 
-  const customers = Array.from(byPhone.values())
-    .sort((a, b) => b.orderCount - a.orderCount);
+  const customers = Array.from(byPhone.values()).sort(
+    (a, b) => b.totalSpent - a.totalSpent
+  );
+
+  const totalSpent = customers.reduce((sum, c) => sum + c.totalSpent, 0);
 
   return (
     <>
-      <AdminHeader title="Customers" />
-      <div className="p-6 space-y-4">
-        <form action="/admin/customers" className="max-w-xs">
-          <input
-            type="text"
-            name="search"
-            defaultValue={search}
-            placeholder="Search by name or phone..."
-            className="w-full h-9 px-3 border border-[#d1d5db] rounded text-sm outline-none focus:ring-2 focus:ring-[#6767A7]"
-          />
-        </form>
+      <AdminHeader
+        title="Klientët"
+        subtitle={`${customers.length} klientë · €${totalSpent.toFixed(0)} gjithsej`}
+      />
+      <div className="p-6 md:p-8 space-y-5">
+        {/* Stats */}
+        <div className="grid grid-cols-3 gap-4">
+          <div className="bg-white rounded-[12px] border border-[#E8E8E8] p-5 text-center">
+            <p className="text-[11px] text-[rgba(18,18,18,0.45)] font-semibold uppercase tracking-wider">
+              Klientë
+            </p>
+            <p className="text-[28px] font-bold text-[#062F35] mt-1 tracking-[-1px]">
+              {customers.length}
+            </p>
+          </div>
+          <div className="bg-white rounded-[12px] border border-[#E8E8E8] p-5 text-center">
+            <p className="text-[11px] text-[rgba(18,18,18,0.45)] font-semibold uppercase tracking-wider">
+              Porosi gjithsej
+            </p>
+            <p className="text-[28px] font-bold text-[#062F35] mt-1 tracking-[-1px]">
+              {orders.length}
+            </p>
+          </div>
+          <div className="bg-white rounded-[12px] border border-[#E8E8E8] p-5 text-center">
+            <p className="text-[11px] text-[rgba(18,18,18,0.45)] font-semibold uppercase tracking-wider">
+              Shpenzim mesatar
+            </p>
+            <p className="text-[28px] font-bold text-[#062F35] mt-1 tracking-[-1px]">
+              €{customers.length > 0 ? (totalSpent / customers.length).toFixed(0) : 0}
+            </p>
+          </div>
+        </div>
 
-        <p className="text-sm text-[#707070]">{customers.length} customers</p>
+        {/* Search */}
+        <form action="/admin/customers" className="max-w-xs">
+          <div className="relative">
+            <svg
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-[rgba(18,18,18,0.3)]"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.3-4.3" />
+            </svg>
+            <input
+              type="text"
+              name="search"
+              defaultValue={search}
+              placeholder="Kërko me emër ose telefon..."
+              className="w-full h-[40px] pl-10 pr-4 border-2 border-[#E8E8E8] rounded-[8px] text-[12px] text-[#062F35] outline-none focus:border-[#062F35] transition-colors bg-white"
+            />
+          </div>
+        </form>
 
         <CustomersTable customers={customers} />
       </div>

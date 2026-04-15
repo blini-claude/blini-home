@@ -21,7 +21,7 @@ export default function CheckoutPage() {
         <span className="text-text">Porosia</span>
       </nav>
 
-      <h1 className="text-4xl font-bold tracking-tight mb-8">Porosia</h1>
+      <h1 className="text-4xl font-extrabold tracking-tight mb-8">Porosia</h1>
 
       <CheckoutForm />
     </div>

@@ -10,8 +10,11 @@ export default async function AdminCollectionsPage() {
 
   return (
     <>
-      <AdminHeader title="Collections" />
-      <div className="p-6">
+      <AdminHeader
+        title="Koleksionet"
+        subtitle={`${collections.length} koleksione`}
+      />
+      <div className="p-6 md:p-8">
         <CollectionsManager collections={collections} />
       </div>
     </>

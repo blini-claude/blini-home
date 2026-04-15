@@ -47,37 +47,44 @@ export function SyncPanel({ logs }: { logs: SyncLogRow[] }) {
   return (
     <div className="space-y-6">
       {/* Trigger buttons */}
-      <div className="bg-white rounded-lg border border-gray-200 p-8">
-        <h2 className="font-semibold text-text mb-5">Trigger Sync</h2>
+      <div className="bg-white rounded-[12px] border border-[#E8E8E8] p-6">
+        <h2 className="text-[14px] font-bold text-[#062F35] mb-5">
+          Nis sinkronizimin
+        </h2>
 
         <div className="mb-6">
           <button
             onClick={triggerSyncAll}
             disabled={syncing !== null}
-            className="h-10 px-6 bg-text text-white rounded-[5px] text-sm font-semibold disabled:opacity-50 hover:bg-text/90 transition-colors cursor-pointer"
+            className="h-[42px] px-6 bg-[#062F35] text-white rounded-[8px] text-[12px] font-bold border-2 border-[#062F35] hover:bg-transparent hover:text-[#062F35] disabled:opacity-50 transition-colors cursor-pointer"
           >
-            {syncing === "all" ? "Starting..." : "Sync All Stores"}
+            {syncing === "all" ? "Duke nisur..." : "Sinkronizo të gjitha dyqanet"}
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {STORES.map((store) => (
-            <div key={store} className="border border-gray-200 rounded-lg p-5">
-              <h3 className="font-semibold text-text capitalize mb-4">{store}</h3>
+            <div
+              key={store}
+              className="border-2 border-[#F0F0F0] rounded-[10px] p-5"
+            >
+              <h3 className="text-[13px] font-bold text-[#062F35] capitalize mb-4">
+                {store}
+              </h3>
               <div className="flex gap-2">
                 <button
                   onClick={() => triggerSync(store, "full")}
                   disabled={syncing !== null}
-                  className="text-xs px-4 py-2 bg-text text-white rounded-[5px] font-medium disabled:opacity-50 hover:bg-text/90 transition-colors cursor-pointer"
+                  className="text-[11px] px-4 py-2 bg-[#062F35] text-white rounded-[6px] font-bold disabled:opacity-50 hover:bg-[#0a4a54] transition-colors cursor-pointer"
                 >
-                  {syncing === `${store}-full` ? "..." : "Full Sync"}
+                  {syncing === `${store}-full` ? "..." : "Sinkronizim i plotë"}
                 </button>
                 <button
                   onClick={() => triggerSync(store, "price")}
                   disabled={syncing !== null}
-                  className="text-xs px-4 py-2 border border-gray-200 rounded-[5px] font-medium text-text disabled:opacity-50 hover:bg-gray-50 transition-colors cursor-pointer"
+                  className="text-[11px] px-4 py-2 border-2 border-[#E8E8E8] rounded-[6px] font-bold text-[#062F35] disabled:opacity-50 hover:bg-[#F5F5F5] transition-colors cursor-pointer"
                 >
-                  {syncing === `${store}-price` ? "..." : "Price Only"}
+                  {syncing === `${store}-price` ? "..." : "Vetëm çmimet"}
                 </button>
               </div>
             </div>
@@ -86,68 +93,124 @@ export function SyncPanel({ logs }: { logs: SyncLogRow[] }) {
       </div>
 
       {/* Sync log history */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="font-semibold text-text">Sync History</h2>
+      <div className="bg-white rounded-[12px] border border-[#E8E8E8] overflow-hidden">
+        <div className="px-5 py-4 border-b border-[#F0F0F0]">
+          <h2 className="text-[14px] font-bold text-[#062F35]">
+            Historia e sinkronizimeve
+          </h2>
         </div>
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-gray-200 bg-gray-50">
-              <th className="text-left px-6 py-3 text-xs font-medium uppercase tracking-wider text-text-secondary">Store</th>
-              <th className="text-left px-6 py-3 text-xs font-medium uppercase tracking-wider text-text-secondary">Status</th>
-              <th className="text-left px-6 py-3 text-xs font-medium uppercase tracking-wider text-text-secondary">Added</th>
-              <th className="text-left px-6 py-3 text-xs font-medium uppercase tracking-wider text-text-secondary">Updated</th>
-              <th className="text-left px-6 py-3 text-xs font-medium uppercase tracking-wider text-text-secondary">Images</th>
-              <th className="text-left px-6 py-3 text-xs font-medium uppercase tracking-wider text-text-secondary">Errors</th>
-              <th className="text-left px-6 py-3 text-xs font-medium uppercase tracking-wider text-text-secondary">Started</th>
-              <th className="text-left px-6 py-3 text-xs font-medium uppercase tracking-wider text-text-secondary">Duration</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {logs.map((log) => {
-              const duration = log.completedAt
-                ? Math.round(
-                    (new Date(log.completedAt).getTime() -
-                      new Date(log.startedAt).getTime()) /
-                      1000
-                  )
-                : null;
+        {logs.length === 0 ? (
+          <p className="px-5 py-12 text-[13px] text-[rgba(18,18,18,0.4)] text-center">
+            Nuk ka sinkronizime ende
+          </p>
+        ) : (
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-[#F0F0F0]">
+                <th className="text-left text-[11px] font-bold text-[rgba(18,18,18,0.4)] uppercase tracking-wider px-5 py-3">
+                  Dyqani
+                </th>
+                <th className="text-left text-[11px] font-bold text-[rgba(18,18,18,0.4)] uppercase tracking-wider px-5 py-3">
+                  Statusi
+                </th>
+                <th className="text-center text-[11px] font-bold text-[rgba(18,18,18,0.4)] uppercase tracking-wider px-3 py-3">
+                  Shtuar
+                </th>
+                <th className="text-center text-[11px] font-bold text-[rgba(18,18,18,0.4)] uppercase tracking-wider px-3 py-3">
+                  Përditësuar
+                </th>
+                <th className="text-center text-[11px] font-bold text-[rgba(18,18,18,0.4)] uppercase tracking-wider px-3 py-3">
+                  Foto
+                </th>
+                <th className="text-center text-[11px] font-bold text-[rgba(18,18,18,0.4)] uppercase tracking-wider px-3 py-3">
+                  Gabime
+                </th>
+                <th className="text-right text-[11px] font-bold text-[rgba(18,18,18,0.4)] uppercase tracking-wider px-5 py-3">
+                  Koha
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {logs.map((log) => {
+                const duration = log.completedAt
+                  ? Math.round(
+                      (new Date(log.completedAt).getTime() -
+                        new Date(log.startedAt).getTime()) /
+                        1000
+                    )
+                  : null;
 
-              return (
-                <tr key={log.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4 font-medium text-text capitalize">{log.sourceStore}</td>
-                  <td className="px-6 py-4">
-                    <span className={`text-xs px-2.5 py-1 rounded-full font-medium border ${
-                      log.status === "completed" ? "bg-green-50 text-green-700 border-green-200" :
-                      log.status === "running" ? "bg-blue-50 text-blue-700 border-blue-200" :
-                      "bg-red-50 text-red-700 border-red-200"
-                    }`}>
-                      {log.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-text">{log.productsAdded}</td>
-                  <td className="px-6 py-4 text-text">{log.productsUpdated}</td>
-                  <td className="px-6 py-4 text-text">{log.imagesDownloaded}</td>
-                  <td className="px-6 py-4">
-                    {log.errors.length > 0 ? (
-                      <span className="text-red-600 font-semibold">{log.errors.length}</span>
-                    ) : (
-                      <span className="text-text-secondary">0</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 text-text-secondary">
-                    {new Date(log.startedAt).toLocaleString("en-GB")}
-                  </td>
-                  <td className="px-6 py-4 text-text-secondary">
-                    {duration !== null ? `${duration}s` : "running..."}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        {logs.length === 0 && (
-          <p className="text-center py-12 text-sm text-text-secondary">No sync logs yet</p>
+                return (
+                  <tr
+                    key={log.id}
+                    className="border-b border-[#F8F8F8] hover:bg-[#FAFBFC] transition-colors"
+                  >
+                    <td className="px-5 py-3 text-[12px] font-semibold text-[#062F35] capitalize">
+                      {log.sourceStore}
+                    </td>
+                    <td className="px-5 py-3">
+                      <span
+                        className={`text-[10px] px-2.5 py-1 rounded-[4px] font-bold ${
+                          log.status === "completed"
+                            ? "bg-[#E8F5E9] text-[#2E7D32]"
+                            : log.status === "running"
+                            ? "bg-[#E3F2FD] text-[#1565C0]"
+                            : "bg-[#FFEBEE] text-[#C62828]"
+                        }`}
+                      >
+                        {log.status === "completed"
+                          ? "Përfunduar"
+                          : log.status === "running"
+                          ? "Duke punuar"
+                          : "Gabim"}
+                      </span>
+                    </td>
+                    <td className="px-3 py-3 text-center text-[12px] text-[#062F35]">
+                      {log.productsAdded > 0 ? (
+                        <span className="font-bold text-[#2E7D32]">
+                          +{log.productsAdded}
+                        </span>
+                      ) : (
+                        "0"
+                      )}
+                    </td>
+                    <td className="px-3 py-3 text-center text-[12px] text-[#062F35]">
+                      {log.productsUpdated}
+                    </td>
+                    <td className="px-3 py-3 text-center text-[12px] text-[rgba(18,18,18,0.45)]">
+                      {log.imagesDownloaded}
+                    </td>
+                    <td className="px-3 py-3 text-center">
+                      {log.errors.length > 0 ? (
+                        <span className="text-[12px] font-bold text-[#C62828]">
+                          {log.errors.length}
+                        </span>
+                      ) : (
+                        <span className="text-[12px] text-[rgba(18,18,18,0.3)]">
+                          0
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-5 py-3 text-right">
+                      <p className="text-[11px] text-[rgba(18,18,18,0.4)]">
+                        {new Date(log.startedAt).toLocaleDateString("sq-AL", {
+                          day: "2-digit",
+                          month: "short",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
+                      <p className="text-[10px] text-[rgba(18,18,18,0.3)]">
+                        {duration !== null
+                          ? `${duration}s`
+                          : "duke punuar..."}
+                      </p>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         )}
       </div>
     </div>

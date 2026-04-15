@@ -18,19 +18,19 @@ export function AddToCartButton({
   const [quantity, setQuantity] = useState(1);
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex items-center gap-3">
-        <div className="flex items-center border border-border">
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center">
+        <div className="flex items-center border border-border rounded-[8px] overflow-hidden">
           <button
             onClick={() => setQuantity(Math.max(1, quantity - 1))}
-            className="w-10 h-10 flex items-center justify-center text-lg hover:bg-card-bg transition-colors"
+            className="w-11 h-11 flex items-center justify-center text-[16px] hover:bg-[#F7F7F7] transition-colors"
           >
-            −
+            &minus;
           </button>
-          <span className="w-10 text-center text-sm font-medium">{quantity}</span>
+          <span className="w-10 text-center text-[14px] font-bold">{quantity}</span>
           <button
             onClick={() => setQuantity(quantity + 1)}
-            className="w-10 h-10 flex items-center justify-center text-lg hover:bg-card-bg transition-colors"
+            className="w-11 h-11 flex items-center justify-center text-[16px] hover:bg-[#F7F7F7] transition-colors"
           >
             +
           </button>
@@ -49,9 +49,9 @@ export function AddToCartButton({
           });
           setQuantity(1);
         }}
-        className="w-full bg-[#1A1A1A] text-white py-4 rounded-[5px] text-base font-semibold hover:bg-[#1A1A1A]/90 transition-colors"
+        className="w-full bg-[#062F35] text-white py-4 rounded-[8px] text-[15px] font-bold border-2 border-[#062F35] hover:bg-transparent hover:text-[#062F35] transition-colors"
       >
-        Shto në shportë — €{(product.price * quantity).toFixed(2)}
+        Shto në shportë &mdash; &euro;{(product.price * quantity).toFixed(2)}
       </button>
     </div>
   );

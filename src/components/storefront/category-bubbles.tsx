@@ -1,41 +1,81 @@
+"use client";
+
 import Link from "next/link";
+import { FadeIn, StaggerContainer, StaggerItem } from "./motion";
 
 const CATEGORIES = [
-  { label: "Shtëpi & Kuzhinë", slug: "shtepi-kuzhine", icon: "🏠", bg: "#FFF0E5" },
-  { label: "Teknologji", slug: "teknologji", icon: "📱", bg: "#E8F0FE" },
-  { label: "Fëmijë & Lodra", slug: "femije-lodra", icon: "🧸", bg: "#FFF3E0" },
-  { label: "Bukuri & Kujdes", slug: "bukuri-kujdes", icon: "💄", bg: "#FCE4EC" },
-  { label: "Sporte", slug: "sporte-aktivitete", icon: "⚽", bg: "#E8F5E9" },
-  { label: "Veshje & Aksesore", slug: "veshje-aksesore", icon: "👗", bg: "#F3E5F5" },
-  { label: "Të reja", slug: "te-rejat", icon: "✨", bg: "#E0F7FA" },
-  { label: "Nën €10", slug: "nen-10", icon: "💰", bg: "#FFF9C4" },
+  {
+    label: "Shtëpi & Kuzhinë",
+    slug: "shtepi-kuzhine",
+    color: "#E8F0E4",
+    imageUrl: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=460&q=80&auto=format&fit=crop",
+  },
+  {
+    label: "Teknologji",
+    slug: "teknologji",
+    color: "#E0EBF5",
+    imageUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=460&q=80&auto=format&fit=crop",
+  },
+  {
+    label: "Fëmijë & Lodra",
+    slug: "femije-lodra",
+    color: "#FFF0E0",
+    imageUrl: "https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=460&q=80&auto=format&fit=crop",
+  },
+  {
+    label: "Bukuri & Kujdes",
+    slug: "bukuri-kujdes",
+    color: "#F5E0EA",
+    imageUrl: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=460&q=80&auto=format&fit=crop",
+  },
+  {
+    label: "Sporte",
+    slug: "sporte-aktivitete",
+    color: "#E0F0E8",
+    imageUrl: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=460&q=80&auto=format&fit=crop",
+  },
+  {
+    label: "Veshje & Aksesorë",
+    slug: "veshje-aksesore",
+    color: "#EDE0F5",
+    imageUrl: "https://images.unsplash.com/photo-1445205170230-053b83016050?w=460&q=80&auto=format&fit=crop",
+  },
 ];
 
 export function CategoryBubbles() {
   return (
-    <section className="py-10">
-      <div className="max-w-[1400px] mx-auto px-4">
-        <h2 className="text-2xl font-bold tracking-tight mb-6">Blej sipas kategorisë</h2>
-        <div className="grid grid-cols-4 md:grid-cols-8 gap-4">
+    <FadeIn>
+    <section>
+      <div className="px-5 mx-auto" style={{ maxWidth: 1440 }}>
+        <h2 className="text-[28px] md:text-[36px] font-bold text-[#062F35] tracking-[-1.6px] mb-[20px]">
+          Blej sipas kategorisë
+        </h2>
+        <StaggerContainer className="grid grid-cols-3 md:grid-cols-6 gap-3 md:gap-4" staggerDelay={0.1}>
           {CATEGORIES.map((cat) => (
-            <Link
-              key={cat.slug}
-              href={`/koleksion/${cat.slug}`}
-              className="flex flex-col items-center gap-2.5 group"
-            >
-              <div
-                className="w-[80px] h-[80px] md:w-[110px] md:h-[110px] rounded-full flex items-center justify-center text-2xl md:text-3xl group-hover:scale-105 transition-transform"
-                style={{ backgroundColor: cat.bg }}
+            <StaggerItem key={cat.slug}>
+              <Link
+                href={`/koleksion/${cat.slug}`}
+                className="flex flex-col items-center gap-2.5 group"
               >
-                <span role="img" aria-label={cat.label}>{cat.icon}</span>
-              </div>
-              <span className="text-xs md:text-sm font-medium text-center leading-tight">
-                {cat.label}
-              </span>
-            </Link>
+                <div
+                  className="w-full aspect-square rounded-[8px] overflow-hidden group-hover:scale-105 transition-transform duration-200"
+                  style={{ backgroundColor: cat.color }}
+                >
+                  <img
+                    src={cat.imageUrl}
+                    alt={cat.label}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <span className="text-[13px] md:text-[14px] font-bold text-[#062F35] text-center leading-tight">
+                  {cat.label}
+                </span>
+              </Link>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
       </div>
     </section>
+    </FadeIn>
   );
 }

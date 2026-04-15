@@ -16,8 +16,8 @@ export default async function AdminSyncPage() {
 
   return (
     <>
-      <AdminHeader title="Sync Controls" />
-      <div className="p-6">
+      <AdminHeader title="Sinkronizimi" subtitle="Menaxho sinkronizimin e produkteve" />
+      <div className="p-6 md:p-8">
         <SyncPanel logs={serialized} />
       </div>
     </>

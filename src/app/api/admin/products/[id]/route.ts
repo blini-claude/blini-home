@@ -17,6 +17,8 @@ export async function PATCH(
   if (body.description !== undefined) data.description = body.description;
   if (body.isActive !== undefined) data.isActive = body.isActive;
   if (body.isFeatured !== undefined) data.isFeatured = body.isFeatured;
+  if (body.category !== undefined) data.category = body.category;
+  if (body.tags !== undefined) data.tags = body.tags;
 
   const product = await db.product.update({ where: { id }, data });
 
