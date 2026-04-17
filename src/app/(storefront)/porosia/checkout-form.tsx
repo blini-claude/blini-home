@@ -4,6 +4,49 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/contexts/cart-context";
 
+// All 38 Kosovo municipalities + major cities, sorted alphabetically.
+// Source: OSCE/Kosovo official list of komunat (2025).
+const KOSOVO_CITIES = [
+  "Artanë (Novobërdë)",
+  "Deçan",
+  "Dragash",
+  "Drenas (Gllogoc)",
+  "Ferizaj",
+  "Fushë Kosovë",
+  "Gjakovë",
+  "Gjilan",
+  "Graçanicë",
+  "Han i Elezit",
+  "Istog",
+  "Junik",
+  "Kaçanik",
+  "Kamenicë",
+  "Klinë",
+  "Kllokot",
+  "Leposaviq",
+  "Lipjan",
+  "Malishevë",
+  "Mamushë",
+  "Mitrovicë",
+  "Mitrovicë e Veriut",
+  "Obiliq",
+  "Pejë",
+  "Podujevë (Besianë)",
+  "Prishtinë",
+  "Prizren",
+  "Rahovec",
+  "Ranillug",
+  "Shtërpcë",
+  "Shtime",
+  "Skenderaj",
+  "Suharekë",
+  "Therandë (Suharekë)",
+  "Viti",
+  "Vushtrri",
+  "Zubin Potok",
+  "Zveçan",
+];
+
 export function CheckoutForm() {
   const router = useRouter();
   const { items, subtotal, clearCart } = useCart();
@@ -90,16 +133,12 @@ export function CheckoutForm() {
         </div>
 
         <div>
-          <label htmlFor="city" className="block text-[13px] font-bold text-text-primary mb-1.5">Qyteti *</label>
+          <label htmlFor="city" className="block text-[13px] font-bold text-text-primary mb-1.5">Qyteti / Komuna *</label>
           <select id="city" name="city" required className={`${inputClass} bg-white cursor-pointer`}>
             <option value="">Zgjidhni qytetin</option>
-            <option value="Prishtine">Prishtine</option>
-            <option value="Prizren">Prizren</option>
-            <option value="Peje">Peje</option>
-            <option value="Mitrovice">Mitrovice</option>
-            <option value="Gjilan">Gjilan</option>
-            <option value="Ferizaj">Ferizaj</option>
-            <option value="Gjakove">Gjakove</option>
+            {KOSOVO_CITIES.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
           </select>
         </div>
 

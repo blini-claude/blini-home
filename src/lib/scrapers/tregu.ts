@@ -22,10 +22,18 @@ export class TreguScraper implements ScraperAdapter {
 
   async *scrapeAll(): AsyncGenerator<ScrapedProduct[], void, unknown> {
     if (this.useApi) {
-      yield* this.scrapeViaApi();
-    } else {
-      yield* this.scrapeViaHtml();
+      // Probe the API — if the key is rejected, fall back to HTML so the
+      // whole sync doesn't silently yield zero products.
+      const probe = await fetchWithRetry(
+        `${WC_API_BASE}/products?per_page=1&consumer_key=${this.wcKey}&consumer_secret=${this.wcSecret}`
+      ).catch(() => null);
+      if (probe && probe.ok) {
+        yield* this.scrapeViaApi();
+        return;
+      }
+      console.warn(`Tregu API unavailable (${probe?.status ?? "network"}), falling back to HTML scrape`);
     }
+    yield* this.scrapeViaHtml();
   }
 
   private async *scrapeViaApi(): AsyncGenerator<ScrapedProduct[], void, unknown> {
@@ -133,13 +141,28 @@ export class TreguScraper implements ScraperAdapter {
       const compareAtPrice = regularPriceEl.length ? parsePrice(regularPriceEl.text()) : null;
 
       const images: string[] = [];
-      $(".woocommerce-product-gallery__image img, .product-images img").each((_, el) => {
-        const src = $(el).attr("data-large_image") || $(el).attr("data-src") || $(el).attr("src");
-        if (src && !src.includes("placeholder")) images.push(src);
+      $(
+        ".woocommerce-product-gallery__image img, .woocommerce-product-gallery .splide__slide img, .product-images img, .woocommerce-main-image img"
+      ).each((_, el) => {
+        const src =
+          $(el).attr("data-zoom-image") ||
+          $(el).attr("data-large_image") ||
+          $(el).attr("data-splide-lazy") ||
+          $(el).attr("data-src") ||
+          $(el).attr("src");
+        if (src && !src.includes("placeholder") && !images.includes(src)) images.push(src);
       });
 
       const category = $(".posted_in a, .product_meta .posted_in a").first().text().trim() || "Të përgjithshme";
-      const inStock = !$(".out-of-stock").length;
+      // Only inspect the main product summary — the related-products carousel
+      // at the bottom renders .out-of-stock ribbons for unrelated SKUs.
+      const summary = $(".mf-summary-meta, .summary.entry-summary, .product-summary-wrap").first();
+      const hasInStock = summary.find(".stock.in-stock, p.stock.in-stock").length > 0;
+      const hasOutOfStock = summary.find(".stock.out-of-stock, p.stock.out-of-stock").length > 0;
+      // Woo marks in-stock products as .stock.in-stock in the summary. When
+      // neither flag is present (e.g. variable products), default to in-stock
+      // rather than hiding the product.
+      const inStock = hasInStock || !hasOutOfStock;
       const sourceId = url.replace(/\/$/, "").split("/").pop() || slugify(title);
 
       return {

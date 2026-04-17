@@ -16,8 +16,9 @@ export async function GET(request: NextRequest) {
     filter: ["isActive = true"],
     attributesToRetrieve: [
       "id", "title", "slug", "price", "compareAtPrice",
-      "thumbnail", "category", "sourceStore", "collections",
+      "thumbnail", "category",
     ],
+    matchingStrategy: "last",
   });
 
   return NextResponse.json(results);

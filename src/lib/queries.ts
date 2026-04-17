@@ -4,15 +4,17 @@ export async function getActiveProducts(options: {
   limit?: number;
   offset?: number;
   category?: string;
+  tag?: string;
   collectionSlug?: string;
   sortBy?: "price-asc" | "price-desc" | "newest" | "name";
   minPrice?: number;
   maxPrice?: number;
 } = {}) {
-  const { limit = 24, offset = 0, category, collectionSlug, sortBy = "newest", minPrice, maxPrice } = options;
+  const { limit = 24, offset = 0, category, tag, collectionSlug, sortBy = "newest", minPrice, maxPrice } = options;
 
   const where: any = { isActive: true };
   if (category) where.category = category;
+  if (tag) where.tags = { has: tag };
   if (minPrice !== undefined || maxPrice !== undefined) {
     where.price = {};
     if (minPrice !== undefined) where.price.gte = minPrice;
@@ -94,6 +96,44 @@ export async function getNewArrivals(limit = 12) {
     orderBy: { createdAt: "desc" },
     take: limit,
   });
+}
+
+export async function getTagsForCollection(collectionSlug?: string): Promise<string[]> {
+  let products;
+  if (collectionSlug) {
+    const collection = await db.collection.findUnique({ where: { slug: collectionSlug } });
+    if (!collection) return [];
+    products = await db.product.findMany({
+      where: { isActive: true, collections: { some: { collectionId: collection.id } } },
+      select: { tags: true },
+    });
+  } else {
+    products = await db.product.findMany({
+      where: { isActive: true },
+      select: { tags: true },
+    });
+  }
+  const tagCounts = new Map<string, number>();
+  for (const p of products) {
+    for (const t of p.tags) {
+      tagCounts.set(t, (tagCounts.get(t) || 0) + 1);
+    }
+  }
+  return Array.from(tagCounts.entries())
+    .sort((a, b) => b[1] - a[1])
+    .map(([tag]) => tag);
+}
+
+export async function getPriceRange(): Promise<{ min: number; max: number }> {
+  const result = await db.product.aggregate({
+    where: { isActive: true },
+    _min: { price: true },
+    _max: { price: true },
+  });
+  return {
+    min: Math.floor(Number(result._min.price ?? 0)),
+    max: Math.ceil(Number(result._max.price ?? 100)),
+  };
 }
 
 export async function getRelatedProducts(productId: string, category: string, limit = 6) {

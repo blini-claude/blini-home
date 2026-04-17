@@ -4,8 +4,8 @@ import sharp from "sharp";
 import { fetchWithRetry } from "../scrapers/utils";
 
 const UPLOADS_DIR = path.join(process.cwd(), "public", "uploads", "products");
-const THUMB_WIDTH = 400;
-const FULL_WIDTH = 800;
+const THUMB_WIDTH = 600;
+const FULL_WIDTH = 1200;
 
 export async function ensureUploadsDir(): Promise<void> {
   await fs.mkdir(UPLOADS_DIR, { recursive: true });
@@ -32,7 +32,7 @@ export async function downloadAndProcessImage(
     const fullPath = path.join(productDir, fullFilename);
     await sharp(buffer)
       .resize(FULL_WIDTH, null, { withoutEnlargement: true })
-      .webp({ quality: 80 })
+      .webp({ quality: 85 })
       .toFile(fullPath);
 
     // Save thumbnail
@@ -40,7 +40,7 @@ export async function downloadAndProcessImage(
     const thumbPath = path.join(productDir, thumbFilename);
     await sharp(buffer)
       .resize(THUMB_WIDTH, null, { withoutEnlargement: true })
-      .webp({ quality: 75 })
+      .webp({ quality: 82 })
       .toFile(thumbPath);
 
     return {

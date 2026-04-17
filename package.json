@@ -26,6 +26,7 @@
     "bullmq": "^5.73.5",
     "cheerio": "^1.2.0",
     "dotenv": "^17.4.2",
+    "framer-motion": "^12.38.0",
     "ioredis": "^5.10.1",
     "jose": "^6.2.2",
     "meilisearch": "^0.57.0",

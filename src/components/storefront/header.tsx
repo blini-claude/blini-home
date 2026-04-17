@@ -7,89 +7,14 @@ import { MobileMenu } from "./mobile-menu";
 import { CartDrawer } from "./cart-drawer";
 import { InstantSearch } from "./instant-search";
 import { motion, AnimatePresence } from "./motion";
-
-const NAV_ITEMS: {
-  label: string;
-  href: string;
-  isPromo?: boolean;
-  color?: string;
-  promoTitle?: string;
-  promoSubtitle?: string;
-  children?: { heading?: string; links: { label: string; href: string }[] }[];
-}[] = [
-  {
-    label: "Të reja",
-    href: "/koleksion/te-rejat",
-    color: "#E8F0E4",
-    promoTitle: "Zbulo të rejat",
-    promoSubtitle: "Produktet më të reja të javës",
-    children: [
-      {
-        heading: "Kategori",
-        links: [
-          { label: "Të gjitha të rejat", href: "/koleksion/te-rejat" },
-          { label: "Shtepi & Kuzhine", href: "/koleksion/shtepi-kuzhine" },
-          { label: "Femije & Lodra", href: "/koleksion/femije-lodra" },
-          { label: "Teknologji", href: "/koleksion/teknologji" },
-        ],
-      },
-      {
-        heading: "Çmimi",
-        links: [
-          { label: "Nën €10", href: "/koleksion/nen-10" },
-          { label: "Oferta & Zbritje", href: "/koleksion/oferta" },
-        ],
-      },
-    ],
-  },
-  {
-    label: "Bestseller",
-    href: "/koleksion/me-te-shitura",
-    color: "#FFF0E0",
-    promoTitle: "Më të shitura",
-    promoSubtitle: "Produktet më të dashura nga klientët",
-    children: [
-      {
-        heading: "Popullaritet",
-        links: [
-          { label: "Më të shitura", href: "/koleksion/me-te-shitura" },
-          { label: "Të gjitha produktet", href: "/koleksion/te-gjitha" },
-        ],
-      },
-      {
-        heading: "Çmimi",
-        links: [
-          { label: "Nën €10", href: "/koleksion/nen-10" },
-          { label: "Oferta & Zbritje", href: "/koleksion/oferta" },
-        ],
-      },
-    ],
-  },
-  { label: "Shtepi", href: "/koleksion/shtepi-kuzhine" },
-  {
-    label: "Dhurata",
-    href: "/koleksion/dhurata",
-    color: "#F5E0EA",
-    promoTitle: "Ide për dhurata",
-    promoSubtitle: "Gjej dhuratën perfekte për të dashurit tuaj",
-    children: [
-      {
-        heading: "Dhurata",
-        links: [
-          { label: "Ide për dhurata", href: "/koleksion/dhurata" },
-          { label: "Nën €10", href: "/koleksion/nen-10" },
-          { label: "Të gjitha", href: "/koleksion/te-gjitha" },
-        ],
-      },
-    ],
-  },
-  { label: "Lodra & Lojera", href: "/koleksion/femije-lodra" },
-  { label: "Teknologji", href: "/koleksion/teknologji" },
-  { label: "Bukuri", href: "/koleksion/bukuri-kujdes" },
-  { label: "Aksesore", href: "/koleksion/veshje-aksesore" },
-  { label: "Last Chance - deri 50%", href: "/koleksion/oferta", isPromo: true },
-  { label: "Shiko të gjitha", href: "/koleksion/te-gjitha" },
-];
+import {
+  NAV_TAXONOMY,
+  PROMO_LINK,
+  ALL_PRODUCTS_LINK,
+  buildCategoryHref,
+  buildSubcategoryHref,
+  type NavCategory,
+} from "@/lib/nav-taxonomy";
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -201,104 +126,30 @@ export function Header() {
           onMouseLeave={() => setHoveredNav(null)}
         >
           <ul className="flex items-center h-full list-none" style={{ justifyContent: "space-between" }}>
-            {NAV_ITEMS.map((item) => (
-              <li
-                key={item.href + item.label}
-                className="relative"
-                onMouseEnter={() => item.children ? setHoveredNav(item.label) : setHoveredNav(null)}
-              >
-                <Link
-                  href={item.href}
-                  className={`whitespace-nowrap text-[15px] font-semibold transition-colors py-2 ${
-                    item.isPromo
-                      ? "text-[#D4A017] font-bold"
-                      : hoveredNav === item.label
-                      ? "text-[#062F35]"
-                      : "text-[#062F35] hover:text-[rgba(18,18,18,0.6)]"
-                  }`}
-                >
-                  {item.label}
-                </Link>
-
-                {/* Full-width mega menu dropdown */}
-                <AnimatePresence>
-                {item.children && hoveredNav === item.label && (
-                  <motion.div
-                    className="fixed left-0 right-0 top-auto pt-2 z-50"
-                    style={{ marginTop: 20 }}
-                    initial={{ opacity: 0, y: -8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={{ duration: 0.2, ease: "easeOut" }}
-                  >
-                    <div className="px-5 mx-auto" style={{ maxWidth: 1440 }}>
-                      <div
-                        className="flex bg-white rounded-[16px] shadow-xl border border-[rgba(18,18,18,0.06)] overflow-hidden"
-                        style={{ minHeight: 340 }}
-                      >
-                        {/* Link columns */}
-                        <div className="flex-1 flex gap-10 py-9 px-10">
-                          {item.children.map((group, gi) => (
-                            <div key={gi} className="min-w-[160px]">
-                              {group.heading && (
-                                <p className="text-[11px] font-bold text-[rgba(18,18,18,0.4)] uppercase tracking-wider mb-4">
-                                  {group.heading}
-                                </p>
-                              )}
-                              {group.links.map((link) => (
-                                <Link
-                                  key={link.href}
-                                  href={link.href}
-                                  className="block text-[14px] text-[#062F35] py-2 hover:text-[rgba(18,18,18,0.5)] transition-colors"
-                                >
-                                  {link.label}
-                                </Link>
-                              ))}
-                            </div>
-                          ))}
-                          {/* CTA at bottom of links area */}
-                          <div className="flex items-end ml-auto">
-                            <Link
-                              href={item.href}
-                              className="inline-flex items-center bg-[#062F35] text-white text-[13px] font-bold px-5 py-2 rounded-[8px] border-2 border-[#062F35] hover:bg-transparent hover:text-[#062F35] transition-colors whitespace-nowrap"
-                            >
-                              Blej tani
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="ml-1.5">
-                                <path d="M5 12h14M12 5l7 7-7 7" />
-                              </svg>
-                            </Link>
-                          </div>
-                        </div>
-                        {/* Pastel promo image area — takes up more space */}
-                        <div
-                          className="w-[420px] flex flex-col items-center justify-center p-10 flex-shrink-0 relative"
-                          style={{ backgroundColor: item.color || "#F5F5F5" }}
-                        >
-                          <p className="text-[22px] font-bold text-[#062F35] text-center leading-snug tracking-[-0.3px]">
-                            {item.promoTitle || item.label}
-                          </p>
-                          {item.promoSubtitle && (
-                            <p className="text-[14px] text-[rgba(18,18,18,0.55)] text-center mt-3 leading-relaxed max-w-[280px]">
-                              {item.promoSubtitle}
-                            </p>
-                          )}
-                          <Link
-                            href={item.href}
-                            className="mt-5 inline-flex items-center gap-1.5 bg-[#062F35] text-white text-[13px] font-bold px-5 py-2 rounded-[8px] border-2 border-[#062F35] hover:bg-transparent hover:text-[#062F35] transition-colors"
-                          >
-                            Zbulo
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M5 12h14M12 5l7 7-7 7" />
-                            </svg>
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-                </AnimatePresence>
-              </li>
+            {NAV_TAXONOMY.map((cat) => (
+              <NavItem
+                key={cat.slug}
+                category={cat}
+                isHovered={hoveredNav === cat.slug}
+                onHover={() => setHoveredNav(cat.slug)}
+              />
             ))}
+            <li>
+              <Link
+                href={PROMO_LINK.href}
+                className="whitespace-nowrap text-[15px] font-bold text-[#D4A017] transition-colors py-2"
+              >
+                {PROMO_LINK.label}
+              </Link>
+            </li>
+            <li>
+              <Link
+                href={ALL_PRODUCTS_LINK.href}
+                className="whitespace-nowrap text-[15px] font-semibold text-[#062F35] hover:text-[rgba(18,18,18,0.6)] transition-colors py-2"
+              >
+                {ALL_PRODUCTS_LINK.label}
+              </Link>
+            </li>
           </ul>
         </nav>
       </header>
@@ -306,5 +157,90 @@ export function Header() {
       <MobileMenu isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
       <CartDrawer />
     </>
+  );
+}
+
+function NavItem({
+  category,
+  isHovered,
+  onHover,
+}: {
+  category: NavCategory;
+  isHovered: boolean;
+  onHover: () => void;
+}) {
+  const catHref = buildCategoryHref(category);
+  const hasChildren = category.children.length > 0;
+
+  return (
+    <li className="relative" onMouseEnter={onHover}>
+      <Link
+        href={catHref}
+        className={`whitespace-nowrap text-[15px] font-semibold transition-colors py-2 ${
+          isHovered ? "text-[#062F35]" : "text-[#062F35] hover:text-[rgba(18,18,18,0.6)]"
+        }`}
+      >
+        {category.label}
+      </Link>
+
+      <AnimatePresence>
+        {hasChildren && isHovered && (
+          <motion.div
+            className="fixed left-0 right-0 top-auto pt-2 z-50"
+            style={{ marginTop: 20 }}
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+          >
+            <div className="px-5 mx-auto" style={{ maxWidth: 1440 }}>
+              <div
+                className="flex bg-white rounded-[16px] shadow-xl border border-[rgba(18,18,18,0.06)] overflow-hidden"
+                style={{ minHeight: 340 }}
+              >
+                <div className="flex-1 py-9 px-10">
+                  <p className="text-[11px] font-bold text-[rgba(18,18,18,0.4)] uppercase tracking-wider mb-4">
+                    Nënkategoritë
+                  </p>
+                  <div className="grid grid-cols-3 gap-x-8 gap-y-1 max-w-[640px]">
+                    {category.children.map((child) => (
+                      <Link
+                        key={child.label}
+                        href={buildSubcategoryHref(category, child)}
+                        className="text-[14px] text-[#062F35] py-2 hover:text-[rgba(18,18,18,0.5)] transition-colors"
+                      >
+                        {child.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+                <div
+                  className="w-[400px] flex flex-col items-center justify-center p-10 flex-shrink-0"
+                  style={{ backgroundColor: category.color }}
+                >
+                  <p className="text-[22px] font-bold text-[#062F35] text-center leading-snug tracking-[-0.3px]">
+                    {category.promoTitle || category.label}
+                  </p>
+                  {category.promoSubtitle && (
+                    <p className="text-[14px] text-[rgba(18,18,18,0.55)] text-center mt-3 leading-relaxed max-w-[280px]">
+                      {category.promoSubtitle}
+                    </p>
+                  )}
+                  <Link
+                    href={catHref}
+                    className="mt-5 inline-flex items-center gap-1.5 bg-[#062F35] text-white text-[13px] font-bold px-5 py-2 rounded-[8px] border-2 border-[#062F35] hover:bg-transparent hover:text-[#062F35] transition-colors"
+                  >
+                    Zbulo të gjitha
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </li>
   );
 }

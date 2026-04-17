@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "bennygroup.store" },
       { protocol: "https", hostname: "**.bennygroup.store" },
       { protocol: "https", hostname: "cdn.shopify.com" },
+      { protocol: "https", hostname: "images.unsplash.com" },
     ],
   },
 };
