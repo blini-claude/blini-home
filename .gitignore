@@ -46,3 +46,14 @@ next-env.d.ts
 
 # superpowers
 .superpowers/
+
+# runtime uploads (product images from sync)
+/public/uploads/
+
+# deploy artifacts
+deploy.tar.gz
+deploy-*.tar.gz
+
+# debug scripts
+/check-*.js
+/check-*.mjs

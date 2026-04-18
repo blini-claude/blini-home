@@ -4,6 +4,7 @@ import { CategoryBubbles } from "@/components/storefront/category-bubbles";
 import { ProductCarousel } from "@/components/storefront/product-carousel";
 import { PromoCards } from "@/components/storefront/promo-cards";
 import { DeliveryInfo } from "@/components/storefront/delivery-info";
+import { RecentlyViewed } from "@/components/storefront/recently-viewed";
 import { getSiteSettings } from "@/lib/site-settings";
 
 export const dynamic = "force-dynamic";
@@ -69,6 +70,11 @@ export default async function HomePage() {
         products={bestSellers}
         viewAllHref="/koleksion/me-te-shitura"
       />
+
+      <div className="h-[40px] md:h-[60px]" />
+
+      {/* Recently viewed products */}
+      <RecentlyViewed />
 
       <div className="h-[40px] md:h-[60px]" />
 

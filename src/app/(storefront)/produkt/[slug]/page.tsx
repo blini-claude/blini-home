@@ -5,6 +5,13 @@ import { getProductBySlug, getRelatedProducts } from "@/lib/queries";
 import { ImageGallery } from "@/components/storefront/image-gallery";
 import { ProductCarousel } from "@/components/storefront/product-carousel";
 import { AddToCartButton } from "./add-to-cart-button";
+import { ActivityPill } from "@/components/storefront/activity-pill";
+import { StarRating } from "@/components/storefront/star-rating";
+import { ProductReviews } from "@/components/storefront/product-reviews";
+import { RecentlyViewed } from "@/components/storefront/recently-viewed";
+import { getProductRating } from "@/lib/reviews";
+import { getRecommendations } from "@/lib/recommendations";
+import { TrackRecentlyViewed } from "./track-recently-viewed";
 
 export async function generateMetadata({
   params,
@@ -33,11 +40,26 @@ export default async function ProductPage({
   const compareAt = product.compareAtPrice ? Number(product.compareAtPrice) : null;
   const isOnSale = compareAt && compareAt > price;
   const allImages = product.images.length > 0 ? product.images : product.thumbnail ? [product.thumbnail] : [];
+  const { rating, count } = getProductRating(product.id, price);
 
-  const related = await getRelatedProducts(product.id, product.category, 6);
+  const [related, recommendations] = await Promise.all([
+    getRelatedProducts(product.id, product.category, 6),
+    getRecommendations(product.id, product.category, price, 8),
+  ]);
 
   return (
     <div className="max-w-[1400px] mx-auto px-4 md:px-8 py-8 md:py-12">
+      {/* Track recently viewed */}
+      <TrackRecentlyViewed
+        product={{
+          id: product.id,
+          slug: product.slug,
+          title: product.title,
+          price,
+          thumbnail: product.thumbnail,
+        }}
+      />
+
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-[13px] text-text-secondary mb-6">
         <Link href="/" className="hover:text-text-primary transition-colors">
@@ -60,6 +82,22 @@ export default async function ProductPage({
           <h1 className="text-[24px] lg:text-[28px] font-bold text-text-primary tracking-[-0.5px] leading-tight">
             {product.title}
           </h1>
+
+          {/* Activity Pill — right under title */}
+          <div className="mt-2">
+            <ActivityPill
+              productId={product.id}
+              price={price}
+              isFeatured={product.isFeatured}
+              isOnSale={!!isOnSale}
+              variant="full"
+            />
+          </div>
+
+          {/* Star Rating */}
+          <div className="mt-2">
+            <StarRating rating={rating} count={count} size="md" />
+          </div>
 
           <div className="mt-4 flex items-baseline gap-3">
             <span className={`text-[24px] font-bold ${isOnSale ? "text-sale" : "text-text-primary"}`}>
@@ -135,12 +173,31 @@ export default async function ProductPage({
         </div>
       </div>
 
+      {/* Reviews section */}
+      <ProductReviews
+        productId={product.id}
+        category={product.category}
+        price={price}
+      />
+
+      {/* Customers also bought */}
+      {recommendations.length > 0 && (
+        <div className="mt-16">
+          <ProductCarousel title="Klientët blenë gjithashtu" products={recommendations} />
+        </div>
+      )}
+
       {/* Related products */}
       {related.length > 0 && (
-        <div className="mt-20">
+        <div className="mt-16">
           <ProductCarousel title="Produkte të ngjashme" products={related} />
         </div>
       )}
+
+      {/* Recently viewed */}
+      <div className="mt-16">
+        <RecentlyViewed />
+      </div>
     </div>
   );
 }

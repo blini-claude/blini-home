@@ -2,6 +2,9 @@
 
 import Link from "next/link";
 import { useCart } from "@/contexts/cart-context";
+import { ActivityPill } from "./activity-pill";
+import { StarRating } from "./star-rating";
+import { getProductRating } from "@/lib/reviews";
 import type { Product } from "@prisma/client";
 
 export function ProductCard({
@@ -15,6 +18,7 @@ export function ProductCard({
   const price = Number(product.price);
   const compareAt = product.compareAtPrice ? Number(product.compareAtPrice) : null;
   const isOnSale = compareAt && compareAt > price;
+  const { rating, count } = getProductRating(product.id, price);
 
   const imgSrc = product.thumbnail || product.images[0] || null;
 
@@ -52,13 +56,30 @@ export function ProductCard({
             {product.title.split(/\s+/).slice(0, 3).join(" ")}
           </h3>
         </Link>
+
+        {/* Activity Pill */}
+        <div className="mt-1">
+          <ActivityPill
+            productId={product.id}
+            price={price}
+            isFeatured={product.isFeatured}
+            isOnSale={!!isOnSale}
+            variant="compact"
+          />
+        </div>
+
+        {/* Star Rating */}
+        <div className="mt-1">
+          <StarRating rating={rating} count={count} size="sm" />
+        </div>
+
         <div className="mt-1 flex items-baseline gap-2">
           <span className={`text-[15px] font-bold ${isOnSale ? "text-[#D4A017]" : "text-[#062F35]"}`}>
-            €{price.toFixed(2)}
+            &euro;{price.toFixed(2)}
           </span>
           {isOnSale && (
             <span className="text-[13px] text-[rgba(18,18,18,0.4)] line-through">
-              €{compareAt!.toFixed(2)}
+              &euro;{compareAt!.toFixed(2)}
             </span>
           )}
         </div>
