@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCart } from "@/contexts/cart-context";
 import { ActivityPill } from "./activity-pill";
 import { StarRating } from "./star-rating";
+import { WishlistButton } from "./wishlist-button";
 import { getProductRating } from "@/lib/reviews";
 import type { Product } from "@prisma/client";
 
@@ -47,6 +48,16 @@ export function ProductCard({
             -{Math.round(((compareAt! - price) / compareAt!) * 100)}%
           </span>
         )}
+
+        <WishlistButton
+          product={{
+            id: product.id,
+            slug: product.slug,
+            title: product.title,
+            price,
+            thumbnail: product.thumbnail,
+          }}
+        />
       </Link>
 
       {/* Product info */}

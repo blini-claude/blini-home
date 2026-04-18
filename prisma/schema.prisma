@@ -168,16 +168,20 @@ model AdminUser {
 }
 
 model SiteSettings {
-  id               String   @id @default("main")
-  heroSlides       Json     @default("[]")
-  announcementText String   @default("Dërgim falas për porosi mbi €30")
-  welcomeMessage   String   @default("Mirësevini në BLINI HOME!")
-  whatsappNumber   String   @default("+38344000000")
-  whatsappEnabled  Boolean  @default(true)
-  iziPostApiKey    String?
-  iziPostApiUrl    String   @default("https://api.izis-post.com")
-  footerText       String   @default("Produkte cilësore për shtëpinë")
-  updatedAt        DateTime @updatedAt
+  id                      String   @id @default("main")
+  heroSlides              Json     @default("[]")
+  announcementText        String   @default("Dërgim falas për porosi mbi €30")
+  welcomeMessage          String   @default("Mirësevini në BLINI HOME!")
+  whatsappNumber          String   @default("+38344000000")
+  whatsappEnabled         Boolean  @default(true)
+  iziPostApiKey           String?
+  iziPostApiUrl           String   @default("https://api.izis-post.com")
+  footerText              String   @default("Produkte cilësore për shtëpinë")
+  freeShippingThreshold   Decimal  @db.Decimal(10, 2) @default(30)
+  maxOrdersPerPhonePerDay Int      @default(3)
+  newsletterPopupEnabled  Boolean  @default(true)
+  newsletterDiscountPct   Int      @default(5)
+  updatedAt               DateTime @updatedAt
 }
 
 model Subscriber {
@@ -188,4 +192,39 @@ model Subscriber {
 
   @@index([isActive])
   @@index([createdAt])
+}
+
+model PriceHistory {
+  id          String   @id @default(cuid())
+  productId   String
+  sourceStore String
+  sourceId    String
+  price       Decimal  @db.Decimal(10, 2)
+  recordedAt  DateTime @default(now())
+
+  @@index([productId, recordedAt])
+  @@index([sourceStore, sourceId])
+}
+
+model Blacklist {
+  id        String   @id @default(cuid())
+  phone     String   @unique
+  reason    String?
+  notes     String?
+  createdAt DateTime @default(now())
+
+  @@index([phone])
+}
+
+model NewsletterDiscount {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  email     String
+  used      Boolean  @default(false)
+  usedAt    DateTime?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([email])
+  @@index([code])
 }

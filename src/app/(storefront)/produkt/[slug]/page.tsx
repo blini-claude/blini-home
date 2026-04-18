@@ -9,6 +9,7 @@ import { ActivityPill } from "@/components/storefront/activity-pill";
 import { StarRating } from "@/components/storefront/star-rating";
 import { ProductReviews } from "@/components/storefront/product-reviews";
 import { RecentlyViewed } from "@/components/storefront/recently-viewed";
+import { PriceHistoryBadge } from "@/components/storefront/price-history-badge";
 import { getProductRating } from "@/lib/reviews";
 import { getRecommendations } from "@/lib/recommendations";
 import { TrackRecentlyViewed } from "./track-recently-viewed";
@@ -115,6 +116,8 @@ export default async function ProductPage({
               Kurseni &euro;{(compareAt! - price).toFixed(2)}
             </p>
           )}
+
+          <PriceHistoryBadge productId={product.id} currentPrice={price} />
 
           {/* Add to cart */}
           <div className="mt-8">

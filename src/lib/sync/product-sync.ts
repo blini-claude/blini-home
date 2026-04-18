@@ -135,6 +135,14 @@ async function processProduct(
     const existingPrice = Number(existing.price);
     if (existingPrice !== scraped.price) {
       result.pricesChanged++;
+      await db.priceHistory.create({
+        data: {
+          productId: existing.id,
+          sourceStore: scraped.sourceStore,
+          sourceId: scraped.sourceId,
+          price: scraped.price,
+        },
+      });
     }
 
     await db.product.update({
@@ -171,6 +179,16 @@ async function processProduct(
         stock: 0,
         isActive: scraped.inStock,
         syncedAt: new Date(),
+      },
+    });
+
+    // Record initial price point
+    await db.priceHistory.create({
+      data: {
+        productId: product.id,
+        sourceStore: scraped.sourceStore,
+        sourceId: scraped.sourceId,
+        price: scraped.price,
       },
     });
 

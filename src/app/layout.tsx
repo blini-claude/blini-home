@@ -20,6 +20,15 @@ export const metadata: Metadata = {
     ],
     apple: "/apple-touch-icon.png",
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "BLINI HOME",
+  },
+};
+
+export const viewport = {
+  themeColor: "#062F35",
 };
 
 export default function RootLayout({

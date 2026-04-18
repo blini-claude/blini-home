@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useCart } from "@/contexts/cart-context";
+import { useWishlist } from "@/contexts/wishlist-context";
 import { MobileMenu } from "./mobile-menu";
 import { CartDrawer } from "./cart-drawer";
 import { InstantSearch } from "./instant-search";
@@ -16,11 +17,12 @@ import {
   type NavCategory,
 } from "@/lib/nav-taxonomy";
 
-export function Header() {
+export function Header({ freeShippingThreshold = 30 }: { freeShippingThreshold?: number }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [hoveredNav, setHoveredNav] = useState<string | null>(null);
   const { openCart, itemCount } = useCart();
+  const { count: wishlistCount } = useWishlist();
 
   return (
     <>
@@ -77,6 +79,22 @@ export function Header() {
                 <circle cx="12" cy="8" r="4" />
                 <path d="M5.5 21a6.5 6.5 0 0 1 13 0" />
               </svg>
+            </Link>
+
+            {/* Wishlist */}
+            <Link
+              href="/llogaria/lista"
+              className="w-[38px] h-[38px] flex items-center justify-center relative rounded-full hover:bg-[#F5F5F5] transition-colors"
+              aria-label="Lista e dëshirave"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#062F35" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+              </svg>
+              {wishlistCount > 0 && (
+                <span className="absolute top-0.5 -right-0.5 bg-[#FFC334] text-[#062F35] text-[9px] font-extrabold w-[17px] h-[17px] rounded-full flex items-center justify-center">
+                  {wishlistCount > 99 ? "99+" : wishlistCount}
+                </span>
+              )}
             </Link>
 
             {/* Cart */}
@@ -155,7 +173,7 @@ export function Header() {
       </header>
 
       <MobileMenu isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
-      <CartDrawer />
+      <CartDrawer freeShippingThreshold={freeShippingThreshold} />
     </>
   );
 }

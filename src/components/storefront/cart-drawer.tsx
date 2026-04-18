@@ -6,8 +6,11 @@ import { useEffect } from "react";
 import { useCart } from "@/contexts/cart-context";
 import { motion, AnimatePresence, drawerVariants, backdropVariants } from "./motion";
 
-export function CartDrawer() {
+export function CartDrawer({ freeShippingThreshold = 30 }: { freeShippingThreshold?: number }) {
   const { items, isOpen, closeCart, removeItem, updateQuantity, subtotal } = useCart();
+  const remainingForFreeShipping = Math.max(0, freeShippingThreshold - subtotal);
+  const progressPct = Math.min(100, (subtotal / freeShippingThreshold) * 100);
+  const hasFreeShipping = subtotal >= freeShippingThreshold && freeShippingThreshold > 0;
 
   useEffect(() => {
     if (isOpen) document.body.style.overflow = "hidden";
@@ -46,6 +49,30 @@ export function CartDrawer() {
                 </svg>
               </button>
             </div>
+
+            {/* Free shipping progress */}
+            {items.length > 0 && freeShippingThreshold > 0 && (
+              <div className="px-5 pt-4 pb-3 border-b border-[#E8E8E8]">
+                {hasFreeShipping ? (
+                  <p className="text-[13px] font-bold text-[#2E7D32] flex items-center gap-2">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    Keni fituar dërgim falas!
+                  </p>
+                ) : (
+                  <p className="text-[12px] text-[#062F35] mb-2">
+                    Shto edhe <span className="font-bold">€{remainingForFreeShipping.toFixed(2)}</span> për dërgim falas
+                  </p>
+                )}
+                <div className="h-[6px] bg-[#F0F0F0] rounded-full overflow-hidden">
+                  <div
+                    className={`h-full transition-all duration-500 ease-out ${hasFreeShipping ? "bg-[#2E7D32]" : "bg-[#062F35]"}`}
+                    style={{ width: `${progressPct}%` }}
+                  />
+                </div>
+              </div>
+            )}
 
             {/* Items */}
             <div className="flex-1 overflow-y-auto p-5">

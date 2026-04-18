@@ -22,6 +22,10 @@ export async function PUT(req: NextRequest) {
   if (body.iziPostApiKey !== undefined) data.iziPostApiKey = body.iziPostApiKey;
   if (body.iziPostApiUrl !== undefined) data.iziPostApiUrl = body.iziPostApiUrl;
   if (body.footerText !== undefined) data.footerText = body.footerText;
+  if (body.freeShippingThreshold !== undefined) data.freeShippingThreshold = body.freeShippingThreshold;
+  if (body.maxOrdersPerPhonePerDay !== undefined) data.maxOrdersPerPhonePerDay = body.maxOrdersPerPhonePerDay;
+  if (body.newsletterPopupEnabled !== undefined) data.newsletterPopupEnabled = body.newsletterPopupEnabled;
+  if (body.newsletterDiscountPct !== undefined) data.newsletterDiscountPct = body.newsletterDiscountPct;
 
   const settings = await db.siteSettings.upsert({
     where: { id: "main" },

@@ -16,6 +16,7 @@ export default async function AdminSettingsPage() {
         <SettingsForm
           settings={{
             ...settings,
+            freeShippingThreshold: Number(settings.freeShippingThreshold),
             heroSlides: settings.heroSlides as Array<{
               title: string;
               subtitle: string;

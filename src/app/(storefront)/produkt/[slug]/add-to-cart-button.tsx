@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useCart } from "@/contexts/cart-context";
+import { WishlistButton } from "@/components/storefront/wishlist-button";
 
 export function AddToCartButton({
   product,
@@ -37,22 +38,25 @@ export function AddToCartButton({
         </div>
       </div>
 
-      <button
-        onClick={() => {
-          addItem({
-            productId: product.id,
-            quantity,
-            price: product.price,
-            title: product.title,
-            thumbnail: product.thumbnail,
-            slug: product.slug,
-          });
-          setQuantity(1);
-        }}
-        className="w-full bg-[#062F35] text-white py-4 rounded-[8px] text-[15px] font-bold border-2 border-[#062F35] hover:bg-transparent hover:text-[#062F35] transition-colors"
-      >
-        Shto në shportë &mdash; &euro;{(product.price * quantity).toFixed(2)}
-      </button>
+      <div className="flex gap-2">
+        <button
+          onClick={() => {
+            addItem({
+              productId: product.id,
+              quantity,
+              price: product.price,
+              title: product.title,
+              thumbnail: product.thumbnail,
+              slug: product.slug,
+            });
+            setQuantity(1);
+          }}
+          className="flex-1 bg-[#062F35] text-white py-4 rounded-[8px] text-[15px] font-bold border-2 border-[#062F35] hover:bg-transparent hover:text-[#062F35] transition-colors"
+        >
+          Shto në shportë &mdash; &euro;{(product.price * quantity).toFixed(2)}
+        </button>
+        <WishlistButton product={product} variant="pdp" />
+      </div>
     </div>
   );
 }

@@ -20,6 +20,10 @@ type Settings = {
   iziPostApiKey: string | null;
   iziPostApiUrl: string;
   footerText: string;
+  freeShippingThreshold: number;
+  maxOrdersPerPhonePerDay: number;
+  newsletterPopupEnabled: boolean;
+  newsletterDiscountPct: number;
 };
 
 function SectionCard({
@@ -89,6 +93,18 @@ export function SettingsForm({ settings }: { settings: Settings }) {
   const [footerText, setFooterText] = useState(settings.footerText);
   const [iziPostApiKey, setIziPostApiKey] = useState(settings.iziPostApiKey || "");
   const [iziPostApiUrl, setIziPostApiUrl] = useState(settings.iziPostApiUrl);
+  const [freeShippingThreshold, setFreeShippingThreshold] = useState(
+    String(settings.freeShippingThreshold ?? 30),
+  );
+  const [maxOrdersPerPhone, setMaxOrdersPerPhone] = useState(
+    String(settings.maxOrdersPerPhonePerDay ?? 3),
+  );
+  const [newsletterPopupEnabled, setNewsletterPopupEnabled] = useState(
+    settings.newsletterPopupEnabled ?? true,
+  );
+  const [newsletterDiscountPct, setNewsletterDiscountPct] = useState(
+    String(settings.newsletterDiscountPct ?? 5),
+  );
 
   const [heroSlides, setHeroSlides] = useState<HeroSlide[]>(
     Array.isArray(settings.heroSlides) && settings.heroSlides.length > 0
@@ -120,6 +136,10 @@ export function SettingsForm({ settings }: { settings: Settings }) {
           footerText,
           iziPostApiKey: iziPostApiKey || null,
           iziPostApiUrl,
+          freeShippingThreshold: Number(freeShippingThreshold) || 0,
+          maxOrdersPerPhonePerDay: Math.max(1, parseInt(maxOrdersPerPhone) || 3),
+          newsletterPopupEnabled,
+          newsletterDiscountPct: Math.max(0, Math.min(50, parseInt(newsletterDiscountPct) || 5)),
         }),
       });
       setSaved(true);
@@ -299,6 +319,68 @@ export function SettingsForm({ settings }: { settings: Settings }) {
             value={iziPostApiUrl}
             onChange={setIziPostApiUrl}
             placeholder="https://api.izis-post.com"
+          />
+        </div>
+      </SectionCard>
+
+      {/* Commerce rules */}
+      <SectionCard
+        title="Rregullat e shitjes"
+        description="Kufijtë e dërgimit dhe mbrojtja nga porositë e rreme"
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <InputField
+            label="Dërgim falas mbi (€)"
+            type="number"
+            value={freeShippingThreshold}
+            onChange={setFreeShippingThreshold}
+            placeholder="30"
+            helpText="Shfaqet si shiritë progresi në shportë"
+          />
+          <InputField
+            label="Max porosi/telefon/ditë"
+            type="number"
+            value={maxOrdersPerPhone}
+            onChange={setMaxOrdersPerPhone}
+            placeholder="3"
+            helpText="Mbrojtje kundër porosive të rreme"
+          />
+        </div>
+      </SectionCard>
+
+      {/* Newsletter popup */}
+      <SectionCard
+        title="Popup i Newsletter"
+        description="Oferta e mirëseardhjes për porosinë e parë"
+      >
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-[13px] font-bold text-[#062F35]">Aktiv</p>
+              <p className="text-[11px] text-[rgba(18,18,18,0.4)]">
+                Shfaq popup pas 25s ose në exit-intent
+              </p>
+            </div>
+            <button
+              onClick={() => setNewsletterPopupEnabled(!newsletterPopupEnabled)}
+              className={`w-[48px] h-[26px] rounded-full transition-colors cursor-pointer relative ${
+                newsletterPopupEnabled ? "bg-[#062F35]" : "bg-[#E0E0E0]"
+              }`}
+            >
+              <div
+                className={`w-[22px] h-[22px] bg-white rounded-full absolute top-[2px] transition-transform shadow-sm ${
+                  newsletterPopupEnabled ? "translate-x-[24px]" : "translate-x-[2px]"
+                }`}
+              />
+            </button>
+          </div>
+          <InputField
+            label="Zbritja (%)"
+            type="number"
+            value={newsletterDiscountPct}
+            onChange={setNewsletterDiscountPct}
+            placeholder="5"
+            helpText="Përqindja e zbritjes për porosinë e parë (0-50)"
           />
         </div>
       </SectionCard>

@@ -14,8 +14,10 @@ import {
 const INFO_ITEMS = [
   { label: "Rreth nesh", href: "/rreth-nesh" },
   { label: "Dërgimi", href: "/dergimi" },
+  { label: "Ndiq porosinë", href: "/ndiq-porosine" },
   { label: "Kthimi i produkteve", href: "/kthimi" },
   { label: "Pyetje të shpeshta", href: "/pyetje" },
+  { label: "Lista e dëshirave", href: "/llogaria/lista" },
   { label: "Llogaria ime", href: "/llogaria" },
 ];
 

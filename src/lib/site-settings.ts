@@ -1,4 +1,5 @@
 import { db } from "./db";
+import { Prisma } from "@prisma/client";
 
 const DEFAULT_SETTINGS = {
   id: "main",
@@ -10,6 +11,10 @@ const DEFAULT_SETTINGS = {
   iziPostApiKey: null,
   iziPostApiUrl: "https://api.izis-post.com",
   footerText: "Produkte cilësore për shtëpinë",
+  freeShippingThreshold: new Prisma.Decimal(30),
+  maxOrdersPerPhonePerDay: 3,
+  newsletterPopupEnabled: true,
+  newsletterDiscountPct: 5,
   updatedAt: new Date(),
 };
 
@@ -17,11 +22,9 @@ export async function getSiteSettings() {
   try {
     const settings = await db.siteSettings.findUnique({ where: { id: "main" } });
     if (settings) return settings;
-    // Try to create, but ignore if it already exists from another worker
     try {
       return await db.siteSettings.create({ data: { id: "main" } });
     } catch {
-      // Race condition: another worker created it
       const retry = await db.siteSettings.findUnique({ where: { id: "main" } });
       if (retry) return retry;
     }

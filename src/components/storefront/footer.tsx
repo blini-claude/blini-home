@@ -55,6 +55,7 @@ export function Footer() {
             <h4 className="text-[15px] font-bold text-[#062F35] mb-3 tracking-[-0.3px]">Ndihme & informata</h4>
             <nav className="space-y-1.5">
               <Link href="/dergimi" className="block text-[13px] text-[rgba(18,18,18,0.5)] leading-[19px] hover:text-[#062F35] transition-colors">Informata për dërgimin</Link>
+              <Link href="/ndiq-porosine" className="block text-[13px] text-[rgba(18,18,18,0.5)] leading-[19px] hover:text-[#062F35] transition-colors">Ndiq porosinë</Link>
               <Link href="/kthimi" className="block text-[13px] text-[rgba(18,18,18,0.5)] leading-[19px] hover:text-[#062F35] transition-colors">Kthimi i produkteve</Link>
               <Link href="/pyetje" className="block text-[13px] text-[rgba(18,18,18,0.5)] leading-[19px] hover:text-[#062F35] transition-colors">Pyetje të shpeshta</Link>
               <Link href="/privatesia" className="block text-[13px] text-[rgba(18,18,18,0.5)] leading-[19px] hover:text-[#062F35] transition-colors">Privatesia</Link>

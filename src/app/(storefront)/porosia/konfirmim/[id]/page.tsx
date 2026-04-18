@@ -73,12 +73,20 @@ export default async function ConfirmationPage({
         </p>
       </div>
 
-      <Link
-        href="/"
-        className="inline-block mt-8 bg-[#062F35] text-white px-8 py-3 rounded-[8px] text-[15px] font-bold border-2 border-[#062F35] hover:bg-transparent hover:text-[#062F35] transition-colors"
-      >
-        Vazhdo blerjen
-      </Link>
+      <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+        <Link
+          href="/"
+          className="inline-block bg-[#062F35] text-white px-8 py-3 rounded-[8px] text-[15px] font-bold border-2 border-[#062F35] hover:bg-transparent hover:text-[#062F35] transition-colors"
+        >
+          Vazhdo blerjen
+        </Link>
+        <Link
+          href={`/ndiq-porosine?order=${order.orderNumber}`}
+          className="inline-block bg-transparent text-[#062F35] px-8 py-3 rounded-[8px] text-[15px] font-bold border-2 border-[#062F35] hover:bg-[#062F35] hover:text-white transition-colors"
+        >
+          Ndiq porosinë
+        </Link>
+      </div>
     </div>
   );
 }
