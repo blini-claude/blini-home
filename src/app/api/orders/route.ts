@@ -101,15 +101,36 @@ export async function POST(request: NextRequest) {
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  // Discount code
+  // Discount code — checks merchant-managed Discount codes first, then falls back
+  // to one-shot NewsletterDiscount codes (used for email signup incentives).
   let discountAmount = 0;
-  let appliedDiscountCode: string | null = null;
+  let appliedNewsletterCode: string | null = null;
+  let appliedDiscountId: string | null = null;
   if (discountCode) {
     const code = discountCode.trim().toUpperCase();
-    const discount = await db.newsletterDiscount.findUnique({ where: { code } });
-    if (discount && !discount.used && discount.expiresAt > new Date()) {
-      discountAmount = subtotal * (settings.newsletterDiscountPct / 100);
-      appliedDiscountCode = code;
+
+    const merchantDiscount = await db.discount.findUnique({ where: { code } });
+    const now = new Date();
+    if (
+      merchantDiscount &&
+      merchantDiscount.isActive &&
+      merchantDiscount.startsAt <= now &&
+      (!merchantDiscount.expiresAt || merchantDiscount.expiresAt > now) &&
+      (merchantDiscount.usageLimit == null || merchantDiscount.usageCount < merchantDiscount.usageLimit) &&
+      (merchantDiscount.minOrderTotal == null || subtotal >= Number(merchantDiscount.minOrderTotal))
+    ) {
+      if (merchantDiscount.discountType === "percentage") {
+        discountAmount = subtotal * (Number(merchantDiscount.value) / 100);
+      } else {
+        discountAmount = Math.min(subtotal, Number(merchantDiscount.value));
+      }
+      appliedDiscountId = merchantDiscount.id;
+    } else {
+      const newsletterDiscount = await db.newsletterDiscount.findUnique({ where: { code } });
+      if (newsletterDiscount && !newsletterDiscount.used && newsletterDiscount.expiresAt > new Date()) {
+        discountAmount = subtotal * (settings.newsletterDiscountPct / 100);
+        appliedNewsletterCode = code;
+      }
     }
   }
 
@@ -142,10 +163,16 @@ export async function POST(request: NextRequest) {
     include: { items: { include: { product: true } } },
   });
 
-  if (appliedDiscountCode) {
+  if (appliedNewsletterCode) {
     await db.newsletterDiscount.update({
-      where: { code: appliedDiscountCode },
+      where: { code: appliedNewsletterCode },
       data: { used: true, usedAt: new Date() },
+    });
+  }
+  if (appliedDiscountId) {
+    await db.discount.update({
+      where: { id: appliedDiscountId },
+      data: { usageCount: { increment: 1 } },
     });
   }
 
