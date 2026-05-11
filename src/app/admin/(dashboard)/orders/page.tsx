@@ -75,8 +75,9 @@ export default async function AdminOrdersPage({
     <>
       <AdminHeader title="Porositë" subtitle={`${total} porosi`} />
       <div className="p-6 md:p-8 space-y-5">
-        {/* Status tabs with counts */}
-        <div className="flex gap-1 bg-white rounded-[10px] border border-[#E8E8E8] p-1 w-fit flex-wrap">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          {/* Status tabs with counts */}
+          <div className="flex gap-1 bg-white rounded-[10px] border border-[#E8E8E8] p-1 w-fit flex-wrap">
           {STATUSES.map((s) => {
             const count =
               s.value === "all"
@@ -105,6 +106,13 @@ export default async function AdminOrdersPage({
               </Link>
             );
           })}
+          </div>
+          <Link
+            href="/admin/orders/new"
+            className="h-[40px] px-4 flex items-center bg-[#062F35] text-white rounded-[8px] text-[12px] font-bold border-2 border-[#062F35] hover:bg-transparent hover:text-[#062F35] transition-colors"
+          >
+            + Porosi e re manuale
+          </Link>
         </div>
 
         {/* Search */}
