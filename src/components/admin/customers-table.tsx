@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 interface CustomerRow {
   phone: string;
   name: string;
@@ -42,49 +44,52 @@ export function CustomersTable({ customers }: { customers: CustomerRow[] }) {
           </tr>
         </thead>
         <tbody>
-          {customers.map((c, i) => (
-            <tr
-              key={i}
-              className="border-b border-[#F8F8F8] hover:bg-[#FAFBFC] transition-colors"
-            >
-              <td className="px-5 py-3.5">
-                <div className="flex items-center gap-3">
-                  <div className="w-[32px] h-[32px] rounded-full bg-[#F0F7F8] flex items-center justify-center text-[10px] font-bold text-[#062F35]">
-                    {c.name
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")
-                      .slice(0, 2)
-                      .toUpperCase()}
-                  </div>
-                  <span className="text-[13px] font-semibold text-[#062F35]">
-                    {c.name}
+          {customers.map((c, i) => {
+            const href = `/admin/customers/${encodeURIComponent(c.phone)}`;
+            return (
+              <tr
+                key={i}
+                className="border-b border-[#F8F8F8] hover:bg-[#FAFBFC] transition-colors"
+              >
+                <td className="px-5 py-3.5">
+                  <Link href={href} className="flex items-center gap-3 group">
+                    <div className="w-[32px] h-[32px] rounded-full bg-[#F0F7F8] flex items-center justify-center text-[10px] font-bold text-[#062F35]">
+                      {c.name
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")
+                        .slice(0, 2)
+                        .toUpperCase()}
+                    </div>
+                    <span className="text-[13px] font-semibold text-[#062F35] group-hover:text-[#FFC334] transition-colors">
+                      {c.name}
+                    </span>
+                  </Link>
+                </td>
+                <td className="px-5 py-3.5 text-[12px] text-[rgba(18,18,18,0.5)]">
+                  {c.phone}
+                </td>
+                <td className="px-5 py-3.5 text-[12px] text-[rgba(18,18,18,0.5)]">
+                  {c.city}
+                </td>
+                <td className="px-5 py-3.5 text-center">
+                  <span className="text-[11px] font-bold px-2 py-1 rounded-[4px] bg-[#F0F7F8] text-[#062F35]">
+                    {c.orderCount}
                   </span>
-                </div>
-              </td>
-              <td className="px-5 py-3.5 text-[12px] text-[rgba(18,18,18,0.5)]">
-                {c.phone}
-              </td>
-              <td className="px-5 py-3.5 text-[12px] text-[rgba(18,18,18,0.5)]">
-                {c.city}
-              </td>
-              <td className="px-5 py-3.5 text-center">
-                <span className="text-[11px] font-bold px-2 py-1 rounded-[4px] bg-[#F0F7F8] text-[#062F35]">
-                  {c.orderCount}
-                </span>
-              </td>
-              <td className="px-5 py-3.5 text-right text-[13px] font-bold text-[#062F35]">
-                €{c.totalSpent.toFixed(0)}
-              </td>
-              <td className="px-5 py-3.5 text-right text-[12px] text-[rgba(18,18,18,0.4)]">
-                {new Date(c.lastOrder).toLocaleDateString("sq-AL", {
-                  day: "2-digit",
-                  month: "short",
-                  year: "numeric",
-                })}
-              </td>
-            </tr>
-          ))}
+                </td>
+                <td className="px-5 py-3.5 text-right text-[13px] font-bold text-[#062F35]">
+                  €{c.totalSpent.toFixed(0)}
+                </td>
+                <td className="px-5 py-3.5 text-right text-[12px] text-[rgba(18,18,18,0.4)]">
+                  {new Date(c.lastOrder).toLocaleDateString("sq-AL", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
