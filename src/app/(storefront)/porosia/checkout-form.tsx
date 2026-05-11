@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/contexts/cart-context";
 
@@ -52,9 +52,48 @@ export function CheckoutForm() {
   const { items, subtotal, clearCart } = useCart();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [city, setCity] = useState("");
+  const captureTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const deliveryFee = subtotal >= 30 ? 0 : 2.5;
   const total = subtotal + deliveryFee;
+
+  // Capture cart server-side when the user has typed enough of a phone but
+  // before they submit. Debounced so we don't spam the API on every keystroke.
+  useEffect(() => {
+    if (captureTimer.current) clearTimeout(captureTimer.current);
+    const phoneDigits = phone.replace(/\D/g, "");
+    if (phoneDigits.length < 7 || items.length === 0) return;
+
+    captureTimer.current = setTimeout(() => {
+      fetch("/api/cart-capture", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone,
+          customerName: name || undefined,
+          customerEmail: email || undefined,
+          city: city || undefined,
+          items: items.map((i) => ({
+            productId: i.productId,
+            quantity: i.quantity,
+            price: i.price,
+            title: i.title,
+            thumbnail: i.thumbnail,
+          })),
+        }),
+      }).catch(() => {
+        // Silently ignore — abandoned-cart capture is best-effort.
+      });
+    }, 1500);
+
+    return () => {
+      if (captureTimer.current) clearTimeout(captureTimer.current);
+    };
+  }, [phone, name, email, city, items]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -119,22 +158,22 @@ export function CheckoutForm() {
 
         <div>
           <label htmlFor="name" className="block text-[13px] font-bold text-text-primary mb-1.5">Emri i plote *</label>
-          <input id="name" name="name" required className={inputClass} />
+          <input id="name" name="name" required value={name} onChange={(e) => setName(e.target.value)} className={inputClass} />
         </div>
 
         <div>
           <label htmlFor="phone" className="block text-[13px] font-bold text-text-primary mb-1.5">Numri i telefonit *</label>
-          <input id="phone" name="phone" type="tel" required placeholder="+383 4X XXX XXX" className={inputClass} />
+          <input id="phone" name="phone" type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+383 4X XXX XXX" className={inputClass} />
         </div>
 
         <div>
           <label htmlFor="email" className="block text-[13px] font-bold text-text-primary mb-1.5">Email (opsional)</label>
-          <input id="email" name="email" type="email" className={inputClass} />
+          <input id="email" name="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={inputClass} />
         </div>
 
         <div>
           <label htmlFor="city" className="block text-[13px] font-bold text-text-primary mb-1.5">Qyteti / Komuna *</label>
-          <select id="city" name="city" required className={`${inputClass} bg-white cursor-pointer`}>
+          <select id="city" name="city" required value={city} onChange={(e) => setCity(e.target.value)} className={`${inputClass} bg-white cursor-pointer`}>
             <option value="">Zgjidhni qytetin</option>
             {KOSOVO_CITIES.map((c) => (
               <option key={c} value={c}>{c}</option>

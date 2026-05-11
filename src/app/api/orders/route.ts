@@ -169,6 +169,22 @@ export async function POST(request: NextRequest) {
       data: { used: true, usedAt: new Date() },
     });
   }
+  // Mark any unrecovered abandoned carts for this phone (from the last 7 days)
+  // as recovered. Doesn't matter which order — the abandoned-cart dashboard
+  // just needs to stop showing the phone in the active tab.
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  await db.abandonedCart.updateMany({
+    where: {
+      phone: normalizedPhone,
+      recovered: false,
+      createdAt: { gte: sevenDaysAgo },
+    },
+    data: {
+      recovered: true,
+      recoveredAt: new Date(),
+    },
+  });
+
   if (appliedDiscountId) {
     await db.discount.update({
       where: { id: appliedDiscountId },

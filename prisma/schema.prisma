@@ -229,6 +229,29 @@ model NewsletterDiscount {
   @@index([code])
 }
 
+// Captured at the checkout step when a user enters a phone but doesn't
+// complete the order. Items + customer info snapshotted so the admin
+// can reach out by WhatsApp. Marked `recovered` when a matching order
+// gets placed within 24h, `contacted` when admin acts on it.
+model AbandonedCart {
+  id            String    @id @default(cuid())
+  phone         String
+  customerName  String?
+  customerEmail String?
+  city          String?
+  items         Json      // [{productId, quantity, price, title, thumbnail}]
+  subtotal      Decimal   @db.Decimal(10, 2)
+  contacted     Boolean   @default(false)
+  contactedAt   DateTime?
+  recovered     Boolean   @default(false)
+  recoveredAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([phone])
+  @@index([recovered, contacted, createdAt])
+}
+
 // Merchant-managed discount codes (separate from one-shot newsletter discounts above).
 // Applied at order placement; usage counter is incremented atomically.
 model Discount {
