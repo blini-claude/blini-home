@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import Image from "next/image";
-import { ProductEditModal } from "./product-edit-modal";
 
 interface ProductRow {
   id: string;
@@ -23,7 +23,8 @@ interface ProductRow {
 
 export function ProductsTable({ products }: { products: ProductRow[] }) {
   const router = useRouter();
-  const [editingProduct, setEditingProduct] = useState<ProductRow | null>(null);
+  const searchParams = useSearchParams();
+  const currentPage = searchParams.get("page") || "1";
   const [toggling, setToggling] = useState<string | null>(null);
 
   async function toggleActive(id: string, isActive: boolean) {
@@ -95,7 +96,10 @@ export function ProductsTable({ products }: { products: ProductRow[] }) {
                 className="border-b border-[#F8F8F8] hover:bg-[#FAFBFC] transition-colors"
               >
                 <td className="px-5 py-3">
-                  <div className="flex items-center gap-3">
+                  <Link
+                    href={`/admin/products/${product.id}/edit?from=${currentPage}`}
+                    className="flex items-center gap-3 group"
+                  >
                     <div className="w-[40px] h-[40px] bg-[#F5F5F5] flex-shrink-0 relative rounded-[8px] overflow-hidden">
                       {product.thumbnail ? (
                         <Image
@@ -116,7 +120,7 @@ export function ProductsTable({ products }: { products: ProductRow[] }) {
                       )}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[13px] font-semibold text-[#062F35] truncate max-w-[250px]">
+                      <p className="text-[13px] font-semibold text-[#062F35] truncate max-w-[250px] group-hover:text-[#FFC334] transition-colors">
                         {product.title}
                       </p>
                       {product.tags.length > 0 && (
@@ -137,7 +141,7 @@ export function ProductsTable({ products }: { products: ProductRow[] }) {
                         </div>
                       )}
                     </div>
-                  </div>
+                  </Link>
                 </td>
                 <td className="px-5 py-3">
                   <span className="text-[11px] font-bold px-2 py-1 rounded-[4px] bg-[#F5F5F5] text-[rgba(18,18,18,0.5)] capitalize">
@@ -182,25 +186,18 @@ export function ProductsTable({ products }: { products: ProductRow[] }) {
                   </button>
                 </td>
                 <td className="px-5 py-3 text-right">
-                  <button
-                    onClick={() => setEditingProduct(product)}
-                    className="text-[11px] font-bold text-[#062F35] hover:text-[#FFC334] transition-colors cursor-pointer bg-[#F5F5F5] hover:bg-[#F0F7F8] px-3 py-1.5 rounded-[6px]"
+                  <Link
+                    href={`/admin/products/${product.id}/edit?from=${currentPage}`}
+                    className="inline-block text-[11px] font-bold text-[#062F35] hover:text-[#FFC334] transition-colors cursor-pointer bg-[#F5F5F5] hover:bg-[#F0F7F8] px-3 py-1.5 rounded-[6px]"
                   >
                     Ndrysho
-                  </button>
+                  </Link>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-
-      {editingProduct && (
-        <ProductEditModal
-          product={editingProduct}
-          onClose={() => setEditingProduct(null)}
-        />
-      )}
     </>
   );
 }
