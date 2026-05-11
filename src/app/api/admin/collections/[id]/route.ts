@@ -11,10 +11,11 @@ export async function PATCH(
     return NextResponse.json({ error: "Invalid body" }, { status: 400 });
   }
 
-  const data: any = {};
+  const data: Record<string, unknown> = {};
   if (body.title !== undefined) data.title = body.title;
   if (body.slug !== undefined) data.slug = body.slug;
   if (body.description !== undefined) data.description = body.description;
+  if (body.image !== undefined) data.image = body.image;
   if (body.isActive !== undefined) data.isActive = body.isActive;
   if (body.sortOrder !== undefined) data.sortOrder = body.sortOrder;
 

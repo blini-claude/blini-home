@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { CollectionForm } from "./collection-form";
 
 interface CollectionRow {
@@ -117,15 +118,12 @@ export function CollectionsManager({
                   </td>
                   <td className="px-5 py-3.5 text-right">
                     <div className="flex items-center gap-2 justify-end">
-                      <button
-                        onClick={() => {
-                          setEditing(col);
-                          setShowForm(true);
-                        }}
+                      <Link
+                        href={`/admin/collections/${col.id}/edit`}
                         className="text-[11px] font-bold text-[#062F35] hover:text-[#FFC334] transition-colors cursor-pointer bg-[#F5F5F5] hover:bg-[#F0F7F8] px-3 py-1.5 rounded-[6px]"
                       >
                         Ndrysho
-                      </button>
+                      </Link>
                       <button
                         onClick={() => handleDelete(col.id)}
                         disabled={deleting === col.id}
