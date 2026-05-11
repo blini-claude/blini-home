@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, Fragment } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { OrderStatusBadge } from "./order-status-badge";
 
 interface OrderRow {
@@ -36,6 +37,8 @@ const STATUS_LABELS: Record<string, string> = {
 
 export function OrdersTable({ orders }: { orders: OrderRow[] }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const currentPage = searchParams.get("page") || "1";
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [updating, setUpdating] = useState<string | null>(null);
 
@@ -125,9 +128,13 @@ export function OrdersTable({ orders }: { orders: OrderRow[] }) {
                           .slice(0, 2)
                           .toUpperCase()}
                       </div>
-                      <span className="text-[13px] font-bold text-[#062F35]">
+                      <Link
+                        href={`/admin/orders/${order.id}?from=${currentPage}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="text-[13px] font-bold text-[#062F35] hover:text-[#FFC334] transition-colors"
+                      >
                         {order.orderNumber}
-                      </span>
+                      </Link>
                     </div>
                   </td>
                   <td className="px-5 py-3.5">
@@ -161,6 +168,12 @@ export function OrdersTable({ orders }: { orders: OrderRow[] }) {
                       className="flex items-center gap-2 justify-end"
                       onClick={(e) => e.stopPropagation()}
                     >
+                      <Link
+                        href={`/admin/orders/${order.id}?from=${currentPage}`}
+                        className="text-[10px] font-bold text-[#062F35] hover:text-[#FFC334] bg-[#F5F5F5] hover:bg-[#F0F7F8] px-2.5 py-1.5 rounded-[6px] transition-colors"
+                      >
+                        Hap
+                      </Link>
                       {nextStatus && (
                         <button
                           onClick={() => updateStatus(order.id, nextStatus)}
