@@ -156,7 +156,7 @@ export function OrdersTable({ orders }: { orders: OrderRow[] }) {
                   <td className="px-5 py-3.5">
                     <OrderStatusBadge status={order.status} />
                   </td>
-                  <td className="px-5 py-3.5 text-[12px] text-[rgba(18,18,18,0.4)]">
+                  <td className="px-5 py-3.5 text-[12px] text-[rgba(18,18,18,0.4)]" suppressHydrationWarning>
                     {new Date(order.createdAt).toLocaleDateString("sq-AL", {
                       day: "2-digit",
                       month: "short",
