@@ -151,7 +151,7 @@ export function CartDrawer({ freeShippingThreshold = 30 }: { freeShippingThresho
                 </div>
                 <p className="text-[12px] text-[rgba(18,18,18,0.55)]">Dërgimi llogaritet në hapin tjetër</p>
                 <Link
-                  href="/porosia/shto-me"
+                  href="/porosia"
                   onClick={closeCart}
                   className="block w-full bg-[#062F35] text-white text-center py-3.5 text-[14px] font-bold rounded-[8px] border-2 border-[#062F35] hover:bg-transparent hover:text-[#062F35] transition-colors"
                 >
