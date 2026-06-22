@@ -61,7 +61,21 @@ export default async function AdminProductsPage({
 
   return (
     <>
-      <AdminHeader title="Produktet" subtitle={`${total} produkte gjithsej`} />
+      <AdminHeader
+        title="Produktet"
+        subtitle={`${total} produkte gjithsej`}
+        actions={
+          <Link
+            href="/admin/products/new"
+            className="flex items-center gap-2 h-[40px] px-4 bg-[#062F35] text-white rounded-[8px] text-[12px] font-bold border-2 border-[#062F35] hover:bg-transparent hover:text-[#062F35] transition-colors"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            Produkt i ri
+          </Link>
+        }
+      />
       <div className="p-6 md:p-8 space-y-5">
         {/* Filters row */}
         <div className="flex items-center gap-4 flex-wrap">

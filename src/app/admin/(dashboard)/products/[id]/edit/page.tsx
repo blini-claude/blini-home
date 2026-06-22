@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { AdminHeader } from "@/components/admin/admin-header";
 import { ProductEditor } from "@/components/admin/product-editor";
+import { getNavTaxonomy } from "@/lib/nav";
 
 export default async function AdminProductEditPage({
   params,
@@ -13,7 +14,7 @@ export default async function AdminProductEditPage({
   const { id } = await params;
   const { from } = await searchParams;
 
-  const [product, collections, distinctCategories] = await Promise.all([
+  const [product, collections, distinctCategories, navTaxonomy] = await Promise.all([
     db.product.findUnique({
       where: { id },
       include: {
@@ -29,7 +30,14 @@ export default async function AdminProductEditPage({
       distinct: ["category"],
       orderBy: { category: "asc" },
     }),
+    getNavTaxonomy(),
   ]);
+
+  const navCategories = navTaxonomy.map((n) => ({
+    label: n.label,
+    slug: n.slug,
+    children: n.children.map((c) => ({ label: c.label, tag: c.tag ?? "" })),
+  }));
 
   if (!product) {
     notFound();
@@ -65,6 +73,7 @@ export default async function AdminProductEditPage({
         product={initial}
         collections={collections}
         categories={categories}
+        navCategories={navCategories}
         backHref={from ? `/admin/products?page=${encodeURIComponent(from)}` : "/admin/products"}
       />
     </>

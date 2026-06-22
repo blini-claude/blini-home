@@ -159,6 +159,38 @@ model SyncLog {
   completedAt      DateTime?
 }
 
+// Storefront navigation taxonomy, editable from the admin. When empty, the
+// storefront falls back to the hardcoded NAV_TAXONOMY in lib/nav-taxonomy.ts.
+// A category's `slug` maps to /koleksion/<slug> (i.e. a Collection slug); a
+// child's `tag` filters that collection page via ?tag=<tag>.
+model NavCategory {
+  id            String     @id @default(cuid())
+  label         String
+  slug          String     @unique
+  color         String     @default("#E8F0E4")
+  promoTitle    String?
+  promoSubtitle String?
+  sortOrder     Int        @default(0)
+  isActive      Boolean    @default(true)
+  children      NavChild[]
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@index([isActive, sortOrder])
+}
+
+model NavChild {
+  id         String      @id @default(cuid())
+  label      String
+  tag        String?
+  href       String?
+  sortOrder  Int         @default(0)
+  category   NavCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId String
+
+  @@index([categoryId])
+}
+
 model AdminUser {
   id           String   @id @default(cuid())
   email        String   @unique

@@ -45,4 +45,13 @@ export async function getAdminFromCookie() {
   return verifyToken(token);
 }
 
+/**
+ * Convenience guard for admin API route handlers that mutate data or touch
+ * the filesystem. The global middleware only protects `/admin/*` pages, NOT
+ * `/api/admin/*`, so write endpoints must check this themselves.
+ */
+export async function isAdmin(): Promise<boolean> {
+  return (await getAdminFromCookie()) !== null;
+}
+
 export { COOKIE_NAME, JWT_SECRET };

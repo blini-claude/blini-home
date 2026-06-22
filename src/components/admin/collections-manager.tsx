@@ -10,6 +10,7 @@ interface CollectionRow {
   title: string;
   slug: string;
   description: string | null;
+  image: string | null;
   isActive: boolean;
   sortOrder: number;
   _count: { products: number };

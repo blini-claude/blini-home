@@ -21,6 +21,7 @@ export async function POST(request: NextRequest) {
       title: body.title,
       slug: body.slug,
       description: body.description || null,
+      image: body.image || null,
       isActive: body.isActive ?? true,
       sortOrder: body.sortOrder ?? 0,
     },

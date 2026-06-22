@@ -9,7 +9,6 @@ import { CartDrawer } from "./cart-drawer";
 import { InstantSearch } from "./instant-search";
 import { motion, AnimatePresence } from "./motion";
 import {
-  NAV_TAXONOMY,
   PROMO_LINK,
   ALL_PRODUCTS_LINK,
   buildCategoryHref,
@@ -17,7 +16,13 @@ import {
   type NavCategory,
 } from "@/lib/nav-taxonomy";
 
-export function Header({ freeShippingThreshold = 30 }: { freeShippingThreshold?: number }) {
+export function Header({
+  freeShippingThreshold = 30,
+  nav,
+}: {
+  freeShippingThreshold?: number;
+  nav: NavCategory[];
+}) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [hoveredNav, setHoveredNav] = useState<string | null>(null);
@@ -144,7 +149,7 @@ export function Header({ freeShippingThreshold = 30 }: { freeShippingThreshold?:
           onMouseLeave={() => setHoveredNav(null)}
         >
           <ul className="flex items-center h-full list-none" style={{ justifyContent: "space-between" }}>
-            {NAV_TAXONOMY.map((cat) => (
+            {nav.map((cat) => (
               <NavItem
                 key={cat.slug}
                 category={cat}
@@ -172,7 +177,7 @@ export function Header({ freeShippingThreshold = 30 }: { freeShippingThreshold?:
         </nav>
       </header>
 
-      <MobileMenu isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
+      <MobileMenu isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} nav={nav} />
       <CartDrawer freeShippingThreshold={freeShippingThreshold} />
     </>
   );

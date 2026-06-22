@@ -7,20 +7,21 @@ import { WhatsAppWidget } from "@/components/storefront/whatsapp-widget";
 import { NewsletterPopup } from "@/components/storefront/newsletter-popup";
 import { InstallPrompt } from "@/components/storefront/install-prompt";
 import { getSiteSettings } from "@/lib/site-settings";
+import { getNavTaxonomy } from "@/lib/nav";
 
 export default async function StorefrontLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const settings = await getSiteSettings();
+  const [settings, nav] = await Promise.all([getSiteSettings(), getNavTaxonomy()]);
   const freeShippingThreshold = Number(settings.freeShippingThreshold);
 
   return (
     <WishlistProvider>
       <CartProvider>
         <AnnouncementBar text={settings.announcementText} />
-        <Header freeShippingThreshold={freeShippingThreshold} />
+        <Header freeShippingThreshold={freeShippingThreshold} nav={nav} />
         <main className="min-h-screen">{children}</main>
         <Footer />
         <WhatsAppWidget

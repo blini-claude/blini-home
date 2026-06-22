@@ -8,6 +8,7 @@ interface CollectionData {
   title: string;
   slug: string;
   description: string | null;
+  image?: string | null;
   isActive: boolean;
   sortOrder: number;
 }
@@ -21,7 +22,23 @@ export function CollectionForm({
 }) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [image, setImage] = useState<string | null>(collection?.image ?? null);
   const isEditing = !!collection?.id;
+
+  async function uploadImage(file: File | undefined) {
+    if (!file) return;
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("files", file);
+      const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+      const data = await res.json().catch(() => null);
+      if (res.ok && data?.urls?.[0]) setImage(data.urls[0]);
+    } finally {
+      setUploading(false);
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -32,6 +49,7 @@ export function CollectionForm({
       title: form.get("title") as string,
       slug: form.get("slug") as string,
       description: (form.get("description") as string) || null,
+      image,
       isActive: form.get("isActive") === "on",
       sortOrder: parseInt(form.get("sortOrder") as string) || 0,
     };
@@ -112,6 +130,38 @@ export function CollectionForm({
               defaultValue={collection?.description ?? ""}
               className="w-full px-4 py-3 border-2 border-[#E8E8E8] rounded-[8px] text-[13px] text-[#062F35] outline-none focus:border-[#062F35] transition-colors resize-none"
             />
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-bold text-[#062F35] mb-1.5 uppercase tracking-wider">
+              Imazhi (opsional)
+            </label>
+            <div className="flex items-center gap-3">
+              {image && (
+                <div className="relative w-[56px] h-[56px] rounded-[8px] overflow-hidden bg-[#F5F5F5] flex-shrink-0">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={image} alt="" className="w-full h-full object-cover" />
+                </div>
+              )}
+              <label className="flex-1 h-[44px] flex items-center justify-center border-2 border-dashed border-[#D0D0D0] rounded-[8px] text-[12px] font-bold text-[rgba(18,18,18,0.5)] hover:border-[#062F35] hover:text-[#062F35] transition-colors cursor-pointer">
+                {uploading ? "Duke ngarkuar..." : image ? "Ndrysho imazhin" : "Ngarko imazh"}
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => uploadImage(e.target.files?.[0])}
+                />
+              </label>
+              {image && (
+                <button
+                  type="button"
+                  onClick={() => setImage(null)}
+                  className="text-[11px] font-bold text-[#C62828] cursor-pointer"
+                >
+                  Hiq
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">

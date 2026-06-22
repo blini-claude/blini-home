@@ -4,11 +4,11 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence, leftDrawerVariants, backdropVariants } from "./motion";
 import {
-  NAV_TAXONOMY,
   PROMO_LINK,
   ALL_PRODUCTS_LINK,
   buildCategoryHref,
   buildSubcategoryHref,
+  type NavCategory,
 } from "@/lib/nav-taxonomy";
 
 const INFO_ITEMS = [
@@ -21,7 +21,15 @@ const INFO_ITEMS = [
   { label: "Llogaria ime", href: "/llogaria" },
 ];
 
-export function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export function MobileMenu({
+  isOpen,
+  onClose,
+  nav,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  nav: NavCategory[];
+}) {
   const [expanded, setExpanded] = useState<string | null>(null);
 
   useEffect(() => {
@@ -74,7 +82,7 @@ export function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () =
 
             {/* Category list — Flying Tiger style: inline-expandable */}
             <div className="flex-1 py-2">
-              {NAV_TAXONOMY.map((cat) => {
+              {nav.map((cat) => {
                 const isExpanded = expanded === cat.slug;
                 const hasChildren = cat.children.length > 0;
                 return (
