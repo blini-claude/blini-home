@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "./motion";
+import { useCart } from "@/contexts/cart-context";
 
 const STORAGE_KEY = "blini-home-newsletter-popup";
 const DISMISS_DAYS = 14;
@@ -11,6 +12,7 @@ type Phase = "hidden" | "form" | "success" | "error";
 
 export function NewsletterPopup({ discountPct = 5 }: { discountPct?: number }) {
   const [phase, setPhase] = useState<Phase>("hidden");
+  const { isOpen: cartOpen } = useCart();
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [discountCode, setDiscountCode] = useState<string | null>(null);
@@ -95,7 +97,9 @@ export function NewsletterPopup({ discountPct = 5 }: { discountPct?: number }) {
 
   return (
     <AnimatePresence>
-      {phase !== "hidden" && (
+      {/* Never cover the cart drawer — it owns the conversion path. The popup
+          yields while the cart is open and re-appears once it closes. */}
+      {phase !== "hidden" && !cartOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
           <motion.div
             className="absolute inset-0 bg-black/50"

@@ -21,7 +21,7 @@ export function CartDrawer({ freeShippingThreshold = 30 }: { freeShippingThresho
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50">
+        <div className="fixed inset-0 z-[70]">
           {/* Backdrop */}
           <motion.div
             className="absolute inset-0 bg-black/30"
