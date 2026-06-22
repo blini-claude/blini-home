@@ -30,6 +30,16 @@ const NAV_SECTIONS = [
         ),
       },
       {
+        label: "SEO & Google",
+        href: "/admin/seo",
+        icon: (
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.3-4.3" />
+          </svg>
+        ),
+      },
+      {
         label: "Karocat e braktisura",
         href: "/admin/abandoned-carts",
         icon: (
