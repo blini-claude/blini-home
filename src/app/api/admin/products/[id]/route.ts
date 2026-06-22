@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { syncProductToIndex, removeProductFromIndex } from "@/lib/meilisearch";
+import { isAdmin } from "@/lib/admin-auth";
 
 export async function GET(
   _request: NextRequest,
@@ -34,6 +36,9 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  if (!(await isAdmin())) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const { id } = await params;
   const body = await request.json().catch(() => null);
   if (!body) {
@@ -78,6 +83,8 @@ export async function PATCH(
     },
   });
 
+  await syncProductToIndex(product.id);
+
   return NextResponse.json({
     ...product,
     price: Number(product.price),
@@ -90,7 +97,11 @@ export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  if (!(await isAdmin())) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const { id } = await params;
   await db.product.delete({ where: { id } });
+  await removeProductFromIndex(id);
   return NextResponse.json({ success: true });
 }

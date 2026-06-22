@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { isAdmin } from "@/lib/admin-auth";
 
 export async function GET() {
   const collections = await db.collection.findMany({
@@ -11,6 +12,9 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+  if (!(await isAdmin())) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const body = await request.json().catch(() => null);
   if (!body?.title || !body?.slug) {
     return NextResponse.json({ error: "Title and slug required" }, { status: 400 });

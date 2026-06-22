@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { db } from "@/lib/db";
 import { isAdmin } from "@/lib/admin-auth";
+import { syncProductToIndex } from "@/lib/meilisearch";
 
 function slugify(input: string): string {
   return input
@@ -74,6 +75,8 @@ export async function POST(request: NextRequest) {
         : {}),
     },
   });
+
+  await syncProductToIndex(product.id);
 
   return NextResponse.json({ id: product.id, slug: product.slug }, { status: 201 });
 }
