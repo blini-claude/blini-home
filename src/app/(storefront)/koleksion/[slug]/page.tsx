@@ -1,10 +1,27 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { getCollectionBySlug, getActiveProducts, getPriceRange, getTagsForCollection } from "@/lib/queries";
 import { ProductGrid } from "@/components/storefront/product-grid";
 import { SortSelect } from "@/components/storefront/sort-select";
 import { CollectionFilters } from "@/components/storefront/collection-filters";
 import { MobileFilterButton } from "@/components/storefront/mobile-filter-button";
+import { JsonLd } from "@/components/seo/json-ld";
+import { collectionMetadata, breadcrumbJsonLd, itemListJsonLd, SITE_URL } from "@/lib/seo";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  if (slug === "te-gjitha") {
+    return collectionMetadata({ title: "Të gjitha produktet", slug: "te-gjitha", description: null });
+  }
+  const collection = await getCollectionBySlug(slug);
+  if (!collection) return {};
+  return collectionMetadata(collection);
+}
 
 export default async function CollectionPage({
   params,
@@ -60,6 +77,16 @@ export default async function CollectionPage({
 
   return (
     <div className="px-5 mx-auto py-6 md:py-10" style={{ maxWidth: 1440 }}>
+      <JsonLd
+        data={[
+          breadcrumbJsonLd([
+            { name: "Ballina", url: SITE_URL },
+            { name: collection.title, url: `${SITE_URL}/koleksion/${slug}` },
+          ]),
+          itemListJsonLd(products.map((p) => ({ title: p.title, slug: p.slug }))),
+        ]}
+      />
+
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-[13px] font-bold text-[rgba(18,18,18,0.55)] mb-4">
         <Link href="/" className="hover:text-[#062F35] transition-colors">

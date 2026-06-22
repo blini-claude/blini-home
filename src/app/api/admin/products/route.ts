@@ -3,6 +3,7 @@ import crypto from "crypto";
 import { db } from "@/lib/db";
 import { isAdmin } from "@/lib/admin-auth";
 import { syncProductToIndex } from "@/lib/meilisearch";
+import { autoProductDescription } from "@/lib/seo";
 
 function slugify(input: string): string {
   return input
@@ -48,6 +49,19 @@ export async function POST(request: NextRequest) {
     ? body.images.filter((x: unknown): x is string => typeof x === "string")
     : [];
 
+  const tags: string[] = Array.isArray(body.tags)
+    ? body.tags.filter((t: unknown): t is string => typeof t === "string")
+    : [];
+  const compareAtPrice =
+    body.compareAtPrice != null && body.compareAtPrice !== "" ? Number(body.compareAtPrice) : null;
+  const category = (body.category || "").toString().trim();
+
+  // Every product ships with keyword-rich Albanian copy — auto-generate the
+  // description when the admin leaves it blank.
+  const description =
+    body.description?.trim() ||
+    autoProductDescription({ title: body.title.trim(), slug, category, tags, price, compareAtPrice });
+
   const product = await db.product.create({
     data: {
       sourceStore: "manual",
@@ -55,16 +69,13 @@ export async function POST(request: NextRequest) {
       sourceUrl: "",
       title: body.title.trim(),
       slug,
-      description: body.description?.trim() || null,
+      description,
+      metaTitle: body.metaTitle?.trim() || null,
+      metaDescription: body.metaDescription?.trim() || null,
       price,
-      compareAtPrice:
-        body.compareAtPrice != null && body.compareAtPrice !== ""
-          ? Number(body.compareAtPrice)
-          : null,
-      category: (body.category || "").toString().trim(),
-      tags: Array.isArray(body.tags)
-        ? body.tags.filter((t: unknown): t is string => typeof t === "string")
-        : [],
+      compareAtPrice,
+      category,
+      tags,
       stock: Number.isFinite(Number(body.stock)) ? parseInt(body.stock, 10) : 0,
       images,
       thumbnail: body.thumbnail || images[0] || null,

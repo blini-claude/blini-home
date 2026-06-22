@@ -50,6 +50,8 @@ export async function PATCH(
   if (body.price !== undefined) data.price = body.price;
   if (body.compareAtPrice !== undefined) data.compareAtPrice = body.compareAtPrice;
   if (body.description !== undefined) data.description = body.description;
+  if (body.metaTitle !== undefined) data.metaTitle = body.metaTitle || null;
+  if (body.metaDescription !== undefined) data.metaDescription = body.metaDescription || null;
   if (body.isActive !== undefined) data.isActive = body.isActive;
   if (body.isFeatured !== undefined) data.isFeatured = body.isFeatured;
   if (body.category !== undefined) data.category = body.category;

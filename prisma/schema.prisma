@@ -14,6 +14,8 @@ model Product {
   title          String
   slug           String   @unique
   description    String?
+  metaTitle      String?
+  metaDescription String?
   price          Decimal  @db.Decimal(10, 2)
   compareAtPrice Decimal? @db.Decimal(10, 2)
   images         String[]

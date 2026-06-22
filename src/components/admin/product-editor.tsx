@@ -10,6 +10,8 @@ interface EditorProduct {
   title: string;
   slug: string;
   description: string | null;
+  metaTitle: string | null;
+  metaDescription: string | null;
   price: number;
   compareAtPrice: number | null;
   category: string;
@@ -42,6 +44,8 @@ const EMPTY: EditorProduct = {
   title: "",
   slug: "",
   description: "",
+  metaTitle: null,
+  metaDescription: null,
   price: 0,
   compareAtPrice: null,
   category: "",
@@ -80,6 +84,8 @@ export function ProductEditor({
 
   const [title, setTitle] = useState(initial.title);
   const [description, setDescription] = useState(initial.description ?? "");
+  const [metaTitle, setMetaTitle] = useState(initial.metaTitle ?? "");
+  const [metaDescription, setMetaDescription] = useState(initial.metaDescription ?? "");
   const [price, setPrice] = useState(initial.price ? String(initial.price) : "");
   const [compareAtPrice, setCompareAtPrice] = useState(
     initial.compareAtPrice != null ? String(initial.compareAtPrice) : ""
@@ -175,6 +181,8 @@ export function ProductEditor({
     const payload = {
       title,
       description: description || null,
+      metaTitle: metaTitle || null,
+      metaDescription: metaDescription || null,
       price: parseFloat(price),
       compareAtPrice: compareAtPrice ? parseFloat(compareAtPrice) : null,
       category,
@@ -507,6 +515,44 @@ export function ProductEditor({
             <p className="text-[10px] text-[rgba(18,18,18,0.35)]">
               Nda me presje. Nënkategoritë e zgjedhura më sipër shtohen automatikisht.
             </p>
+          </section>
+
+          <section className="bg-white rounded-[12px] border border-[#E8E8E8] p-5 space-y-4">
+            <div>
+              <h3 className="text-[11px] font-bold uppercase tracking-wider text-[rgba(18,18,18,0.5)]">
+                SEO (Google)
+              </h3>
+              <p className="text-[10px] text-[rgba(18,18,18,0.4)] mt-1">
+                Opsionale — lihen bosh dhe gjenerohen automatikisht me fjalë kyçe.
+              </p>
+            </div>
+            <div>
+              <label className="block text-[11px] font-bold text-[#062F35] mb-1.5 uppercase tracking-wider">
+                Titulli SEO
+              </label>
+              <input
+                value={metaTitle}
+                onChange={(e) => setMetaTitle(e.target.value)}
+                maxLength={70}
+                placeholder={title ? `${title} – Blej online | BLINI HOME` : "Auto"}
+                className="w-full h-[40px] px-3 border-2 border-[#E8E8E8] rounded-[8px] text-[13px] text-[#062F35] outline-none focus:border-[#062F35] transition-colors"
+              />
+              <p className="text-[10px] text-[rgba(18,18,18,0.35)] mt-1">{metaTitle.length}/70</p>
+            </div>
+            <div>
+              <label className="block text-[11px] font-bold text-[#062F35] mb-1.5 uppercase tracking-wider">
+                Përshkrimi SEO
+              </label>
+              <textarea
+                value={metaDescription}
+                onChange={(e) => setMetaDescription(e.target.value)}
+                maxLength={165}
+                rows={3}
+                placeholder="Auto — gjenerohet nga përshkrimi, çmimi dhe COD/dërgesa."
+                className="w-full px-3 py-2 border-2 border-[#E8E8E8] rounded-[8px] text-[13px] text-[#062F35] outline-none focus:border-[#062F35] transition-colors resize-y"
+              />
+              <p className="text-[10px] text-[rgba(18,18,18,0.35)] mt-1">{metaDescription.length}/165</p>
+            </div>
           </section>
         </div>
       </div>

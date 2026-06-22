@@ -48,6 +48,8 @@ export default async function AdminProductEditPage({
     title: product.title,
     slug: product.slug,
     description: product.description,
+    metaTitle: product.metaTitle,
+    metaDescription: product.metaDescription,
     price: Number(product.price),
     compareAtPrice: product.compareAtPrice ? Number(product.compareAtPrice) : null,
     category: product.category,

@@ -13,6 +13,31 @@ import { PriceHistoryBadge } from "@/components/storefront/price-history-badge";
 import { getProductRating } from "@/lib/reviews";
 import { getRecommendations } from "@/lib/recommendations";
 import { TrackRecentlyViewed } from "./track-recently-viewed";
+import { JsonLd } from "@/components/seo/json-ld";
+import {
+  productMetadata,
+  productJsonLd,
+  breadcrumbJsonLd,
+  SITE_URL,
+} from "@/lib/seo";
+
+function toSeoProduct(product: Awaited<ReturnType<typeof getProductBySlug>>) {
+  if (!product) return null;
+  return {
+    title: product.title,
+    slug: product.slug,
+    description: product.description,
+    metaTitle: product.metaTitle,
+    metaDescription: product.metaDescription,
+    category: product.category,
+    tags: product.tags,
+    price: Number(product.price),
+    compareAtPrice: product.compareAtPrice ? Number(product.compareAtPrice) : null,
+    stock: product.stock,
+    images: product.images,
+    thumbnail: product.thumbnail,
+  };
+}
 
 export async function generateMetadata({
   params,
@@ -21,11 +46,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const product = await getProductBySlug(slug);
-  if (!product) return {};
-  return {
-    title: `${product.title} — BLINI HOME`,
-    description: product.description?.substring(0, 160) || undefined,
-  };
+  const seo = toSeoProduct(product);
+  if (!seo) return {};
+  return productMetadata(seo);
 }
 
 export default async function ProductPage({
@@ -48,8 +71,20 @@ export default async function ProductPage({
     getRecommendations(product.id, product.category, price, 8),
   ]);
 
+  const seo = toSeoProduct(product)!;
+  const firstCollection = product.collections[0]?.collection;
+  const breadcrumb = breadcrumbJsonLd([
+    { name: "Ballina", url: SITE_URL },
+    ...(firstCollection
+      ? [{ name: firstCollection.title, url: `${SITE_URL}/koleksion/${firstCollection.slug}` }]
+      : []),
+    { name: product.title, url: `${SITE_URL}/produkt/${product.slug}` },
+  ]);
+
   return (
     <div className="max-w-[1400px] mx-auto px-4 md:px-8 py-8 md:py-12">
+      <JsonLd data={[productJsonLd(seo, { rating, count }), breadcrumb]} />
+
       {/* Track recently viewed */}
       <TrackRecentlyViewed
         product={{
