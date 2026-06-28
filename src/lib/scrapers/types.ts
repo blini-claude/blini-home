@@ -1,5 +1,5 @@
 export interface ScrapedProduct {
-  sourceStore: "shporta" | "tregu" | "benny";
+  sourceStore: "shporta" | "tregu" | "benny" | "sivegeta" | "kubik";
   sourceId: string;
   sourceUrl: string;
   title: string;
@@ -13,7 +13,7 @@ export interface ScrapedProduct {
 
 export interface ScraperAdapter {
   name: string;
-  sourceStore: "shporta" | "tregu" | "benny";
+  sourceStore: "shporta" | "tregu" | "benny" | "sivegeta" | "kubik";
   scrapeAll(): AsyncGenerator<ScrapedProduct[], void, unknown>;
   scrapeProduct(url: string): Promise<ScrapedProduct | null>;
 }

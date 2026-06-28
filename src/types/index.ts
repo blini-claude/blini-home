@@ -1,4 +1,4 @@
-export type SourceStore = "shporta" | "tregu" | "benny";
+export type SourceStore = "shporta" | "tregu" | "benny" | "sivegeta" | "kubik";
 
 export type OrderStatus =
   | "pending"

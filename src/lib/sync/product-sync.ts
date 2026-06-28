@@ -3,8 +3,12 @@ import { meili, PRODUCTS_INDEX } from "../meilisearch";
 import { ShportaScraper } from "../scrapers/shporta";
 import { TreguScraper } from "../scrapers/tregu";
 import { BennyScraper } from "../scrapers/benny";
+import { SivegetaScraper } from "../scrapers/sivegeta";
+import { KubikScraper } from "../scrapers/kubik";
 import { ScraperAdapter, ScrapedProduct, SyncResult } from "../scrapers/types";
 import { mapCategory, getCollectionSlugs } from "./category-mapper";
+import { applyMarkup } from "./markup";
+import { autoProductDescription } from "../seo";
 import { downloadProductImages } from "./image-sync";
 import { makeUniqueSlug, slugify } from "../scrapers/utils";
 import type { SourceStore } from "@/types";
@@ -13,6 +17,8 @@ const scraperMap: Record<SourceStore, () => ScraperAdapter> = {
   shporta: () => new ShportaScraper(),
   tregu: () => new TreguScraper(),
   benny: () => new BennyScraper(),
+  sivegeta: () => new SivegetaScraper(),
+  kubik: () => new KubikScraper(),
 };
 
 export async function syncStore(
@@ -94,6 +100,24 @@ async function processProduct(
   const baseSlug = slugify(scraped.title);
   const slug = makeUniqueSlug(baseSlug, scraped.sourceStore, scraped.sourceId);
 
+  // +5% markup (per-store), applied once at import and stored.
+  const price = applyMarkup(scraped.price, scraped.sourceStore);
+  const compareAtPrice =
+    scraped.compareAtPrice != null
+      ? applyMarkup(scraped.compareAtPrice, scraped.sourceStore)
+      : null;
+  // SEO: never persist the source store's verbatim copy (duplicate content).
+  // Build a unique Albanian description from structured fields instead. Tags
+  // are enriched later by scripts/retaxonomize.ts + scripts/seo-backfill.ts.
+  const seoDescription = autoProductDescription({
+    title: scraped.title,
+    slug,
+    category: mappedCategory,
+    tags: [],
+    price,
+    compareAtPrice,
+  });
+
   // Check if product exists
   const existing = await db.product.findUnique({
     where: {
@@ -133,14 +157,14 @@ async function processProduct(
   if (existing) {
     // Check price change
     const existingPrice = Number(existing.price);
-    if (existingPrice !== scraped.price) {
+    if (existingPrice !== price) {
       result.pricesChanged++;
       await db.priceHistory.create({
         data: {
           productId: existing.id,
           sourceStore: scraped.sourceStore,
           sourceId: scraped.sourceId,
-          price: scraped.price,
+          price,
         },
       });
     }
@@ -149,9 +173,9 @@ async function processProduct(
       where: { id: existing.id },
       data: {
         title: scraped.title,
-        description: scraped.description,
-        price: scraped.price,
-        compareAtPrice: scraped.compareAtPrice,
+        description: seoDescription,
+        price,
+        compareAtPrice,
         category: mappedCategory,
         sourceUrl: scraped.sourceUrl,
         isActive: scraped.inStock,
@@ -170,9 +194,9 @@ async function processProduct(
         sourceUrl: scraped.sourceUrl,
         title: scraped.title,
         slug,
-        description: scraped.description,
-        price: scraped.price,
-        compareAtPrice: scraped.compareAtPrice,
+        description: seoDescription,
+        price,
+        compareAtPrice,
         images,
         thumbnail,
         category: mappedCategory,
@@ -188,13 +212,13 @@ async function processProduct(
         productId: product.id,
         sourceStore: scraped.sourceStore,
         sourceId: scraped.sourceId,
-        price: scraped.price,
+        price,
       },
     });
 
     // Assign to collections
     const collectionSlugs = getCollectionSlugs({
-      price: scraped.price,
+      price,
       category: mappedCategory,
     });
 
@@ -225,22 +249,22 @@ async function processProduct(
     id: existing?.id || slug,
     title: scraped.title,
     slug,
-    description: scraped.description,
-    price: scraped.price,
-    compareAtPrice: scraped.compareAtPrice,
+    description: seoDescription,
+    price,
+    compareAtPrice,
     thumbnail,
     category: mappedCategory,
     sourceStore: scraped.sourceStore,
     isActive: scraped.inStock,
     isFeatured: false,
-    collections: getCollectionSlugs({ price: scraped.price, category: mappedCategory }),
+    collections: getCollectionSlugs({ price, category: mappedCategory }),
   }]);
 }
 
 export async function syncAll(
   options: { downloadImages?: boolean; maxProducts?: number } = {}
 ): Promise<SyncResult[]> {
-  const stores: SourceStore[] = ["shporta", "tregu", "benny"];
+  const stores: SourceStore[] = ["benny", "sivegeta", "kubik"];
   const results: SyncResult[] = [];
 
   for (const store of stores) {
