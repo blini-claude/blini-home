@@ -102,7 +102,7 @@ export default async function HomePage() {
 
       {/* Premium hero shelf — most expensive, best-looking pieces */}
       <ProductCarousel
-        title="Të zgjedhurat premium ✨"
+        title="Të zgjedhurat premium"
         products={newArrivalShelf}
         viewAllHref="/koleksion/teknologji"
       />
