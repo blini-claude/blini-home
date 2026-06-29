@@ -205,6 +205,37 @@ export const STORE_FAQS: { q: string; a: string }[] = [
 
 // ---------- JSON-LD (structured data for rich results) ----------
 
+/**
+ * Per-product FAQ — buying-intent questions about THIS product. Powers
+ * FAQ rich results and "People Also Ask" coverage for long-tail queries
+ * like "<product> a ka pagesë në dorë" / "<product> sa kushton dërgesa".
+ */
+export function productFaqs(p: {
+  title: string;
+  category?: string | null;
+  price: number;
+}): { q: string; a: string }[] {
+  const t = p.title;
+  return [
+    {
+      q: `A mund të blej ${t} me pagesë në dorë?`,
+      a: `Po. ${t} mund ta porositësh te ${BRAND} me pagesë në dorë (COD) në të gjithë Kosovën — paguan vetëm kur ta marrësh në dorë.`,
+    },
+    {
+      q: `Sa kushton ${t}?`,
+      a: `${t} kushton ${eur(p.price)} te ${BRAND}, me dërgesë të shpejtë dhe kthim falas brenda 14 ditësh.`,
+    },
+    {
+      q: `Sa zgjat dërgesa për ${t}?`,
+      a: `Dërgesa e ${t} bëhet zakonisht brenda 1–3 ditëve pune kudo në Kosovë.`,
+    },
+    {
+      q: `A mund ta kthej ${t} nëse nuk jam i kënaqur?`,
+      a: `Po, ke kthim falas brenda 14 ditësh nga marrja e produktit.`,
+    },
+  ];
+}
+
 /** FAQPage structured data — eligible for FAQ rich results in Google. */
 export function faqJsonLd(items: { q: string; a: string }[]): Record<string, unknown> {
   return {
@@ -248,6 +279,37 @@ export function productJsonLd(
           : "https://schema.org/OutOfStock",
       itemCondition: "https://schema.org/NewCondition",
       seller: { "@type": "Organization", name: BRAND },
+      // Delivery + returns annotations — Google surfaces these in the result.
+      shippingDetails: {
+        "@type": "OfferShippingDetails",
+        shippingDestination: {
+          "@type": "DefinedRegion",
+          addressCountry: "XK",
+        },
+        deliveryTime: {
+          "@type": "ShippingDeliveryTime",
+          handlingTime: {
+            "@type": "QuantitativeValue",
+            minValue: 0,
+            maxValue: 1,
+            unitCode: "DAY",
+          },
+          transitTime: {
+            "@type": "QuantitativeValue",
+            minValue: 1,
+            maxValue: 3,
+            unitCode: "DAY",
+          },
+        },
+      },
+      hasMerchantReturnPolicy: {
+        "@type": "MerchantReturnPolicy",
+        applicableCountry: "XK",
+        returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+        merchantReturnDays: 14,
+        returnMethod: "https://schema.org/ReturnByMail",
+        returnFees: "https://schema.org/FreeReturn",
+      },
     },
   };
   if (rating.count > 0) {

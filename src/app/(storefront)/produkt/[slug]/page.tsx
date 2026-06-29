@@ -18,6 +18,8 @@ import {
   productMetadata,
   productJsonLd,
   breadcrumbJsonLd,
+  productFaqs,
+  faqJsonLd,
   SITE_URL,
 } from "@/lib/seo";
 
@@ -72,6 +74,7 @@ export default async function ProductPage({
   ]);
 
   const seo = toSeoProduct(product)!;
+  const faqs = productFaqs({ title: product.title, category: product.category, price });
   const firstCollection = product.collections[0]?.collection;
   const breadcrumb = breadcrumbJsonLd([
     { name: "Ballina", url: SITE_URL },
@@ -83,7 +86,7 @@ export default async function ProductPage({
 
   return (
     <div className="max-w-[1400px] mx-auto px-4 md:px-8 py-8 md:py-12">
-      <JsonLd data={[productJsonLd(seo, { rating, count }), breadcrumb]} />
+      <JsonLd data={[productJsonLd(seo, { rating, count }), breadcrumb, faqJsonLd(faqs)]} />
 
       {/* Track recently viewed */}
       <TrackRecentlyViewed
@@ -210,6 +213,21 @@ export default async function ProductPage({
 
         </div>
       </div>
+
+      {/* FAQ — indexable Q&A + FAQ rich snippet */}
+      <section className="mt-16 max-w-[820px]">
+        <h2 className="text-[20px] md:text-[24px] font-bold text-text-primary tracking-[-0.5px] mb-4">
+          Pyetje për {product.title}
+        </h2>
+        <div className="divide-y divide-[rgba(18,18,18,0.08)]">
+          {faqs.map((f, i) => (
+            <div key={i} className="py-3.5">
+              <h3 className="text-[14px] font-bold text-text-primary mb-1">{f.q}</h3>
+              <p className="text-[14px] leading-relaxed text-text-secondary">{f.a}</p>
+            </div>
+          ))}
+        </div>
+      </section>
 
       {/* Reviews section */}
       <ProductReviews
