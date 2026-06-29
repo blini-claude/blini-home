@@ -52,8 +52,8 @@ const pool = new pg.Pool({
   const result = await meili.index("products").addDocuments(docs);
   console.log("Meilisearch update task:", result.taskUid);
 
-  // Wait for task to complete
-  const task = await meili.waitForTask(result.taskUid);
+  // Wait for task to complete (meilisearch-js 0.5x: tasks.waitForTask)
+  const task = await meili.tasks.waitForTask(result.taskUid);
   console.log("Task status:", task.status);
 
   // Verify
