@@ -26,20 +26,51 @@ export const revalidate = 600;
 const POPULAR_CATEGORIES: { label: string; href: string }[] = [
   { label: "Teknologji", href: "/koleksion/teknologji" },
   { label: "Shtëpi & Kuzhinë", href: "/koleksion/shtepi-kuzhine" },
-  { label: "Mobilje", href: "/koleksion/mobilje" },
   { label: "Bukuri & Kujdes", href: "/koleksion/bukuri-kujdes" },
+  { label: "Nën 10€", href: "/koleksion/nen-10" },
+  { label: "Kuzhinë", href: "/koleksion/kuzhine" },
+  { label: "Sporte & Aktivitete", href: "/koleksion/sporte-aktivitete" },
   { label: "Fëmijë & Lodra", href: "/koleksion/femije-lodra" },
-  { label: "Më të shitura", href: "/koleksion/me-te-shitura" },
-  { label: "Oferta & Zbritje", href: "/koleksion/oferta" },
   { label: "Të rejat", href: "/koleksion/te-rejat" },
 ];
 
 export default async function HomePage() {
-  const [newArrivals, bestSellers, settings] = await Promise.all([
-    getNewArrivals(12),
-    getActiveProducts({ limit: 12, sortBy: "newest" }).then((r) => r.products),
+  // Pull each shelf from its OWN collection with a different sort, then dedupe
+  // across shelves so the same product never shows up twice on the homepage.
+  const [
+    newArrivals,
+    techRaw,
+    homeRaw,
+    beautyRaw,
+    bargainRaw,
+    settings,
+  ] = await Promise.all([
+    getNewArrivals(14),
+    getActiveProducts({ collectionSlug: "teknologji", limit: 24, sortBy: "price-desc" }).then((r) => r.products),
+    getActiveProducts({ collectionSlug: "shtepi-kuzhine", limit: 24, sortBy: "newest" }).then((r) => r.products),
+    getActiveProducts({ collectionSlug: "bukuri-kujdes", limit: 24, sortBy: "newest" }).then((r) => r.products),
+    getActiveProducts({ collectionSlug: "nen-10", limit: 24, sortBy: "price-asc" }).then((r) => r.products),
     getSiteSettings(),
   ]);
+
+  // Greedy dedupe in display order: a product claimed by an earlier shelf is
+  // dropped from every later shelf, then each shelf is capped at 12 items.
+  const seen = new Set<string>();
+  const take12 = <T extends { id: string }>(list: T[]): T[] => {
+    const out: T[] = [];
+    for (const p of list) {
+      if (seen.has(p.id)) continue;
+      seen.add(p.id);
+      out.push(p);
+      if (out.length === 12) break;
+    }
+    return out;
+  };
+  const newArrivalShelf = take12(newArrivals);
+  const techShelf = take12(techRaw);
+  const homeShelf = take12(homeRaw);
+  const beautyShelf = take12(beautyRaw);
+  const bargainShelf = take12(bargainRaw);
 
   const heroSlides = Array.isArray(settings.heroSlides)
     ? (settings.heroSlides as Array<{
@@ -63,7 +94,7 @@ export default async function HomePage() {
       {/* "Shop new arrivals!" carousel */}
       <ProductCarousel
         title="Të rejat e javës!"
-        products={newArrivals}
+        products={newArrivalShelf}
         viewAllHref="/koleksion/te-rejat"
       />
 
@@ -73,17 +104,17 @@ export default async function HomePage() {
       <PromoCards
         cards={[
           {
-            title: "Zbukuro tryezen me stile",
-            subtitle: "Produkte për kuzhinë dhe tryezë që sjellin ngjyrë në çdo vakt",
-            href: "/koleksion/shtepi-kuzhine",
-            bgColor: "#FFF3C4",
-            imageUrl: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&q=80&auto=format&fit=crop",
+            title: "Teknologji & Gadgets",
+            subtitle: "Pajisje smart për çdo ditë — organizohu, argëtohu dhe simplifikohu",
+            href: "/koleksion/teknologji",
+            bgColor: "#E0EBF5",
+            imageUrl: "https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=800&q=80&auto=format&fit=crop",
           },
           {
-            title: "Ide për Dhurata",
-            subtitle: "Gjej dhuratën perfekte për të dashurit tuaj — për çdo rast dhe çdo buxhet",
-            href: "/koleksion/dhurata",
-            bgColor: "#F5E0EA",
+            title: "Çdo gjë nën 10€",
+            subtitle: "Gjetje të vogla me çmim të madh — perfekte për t'i shtuar çdo porosie",
+            href: "/koleksion/nen-10",
+            bgColor: "#FFF3C4",
             imageUrl: "https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=800&q=80&auto=format&fit=crop",
           },
         ]}
@@ -91,17 +122,21 @@ export default async function HomePage() {
 
       <div className="h-[40px] md:h-[60px]" />
 
-      {/* Trending / bestsellers */}
+      {/* Tech shelf — pulled from the Teknologji collection */}
       <ProductCarousel
-        title="Më të shitura"
-        products={bestSellers}
-        viewAllHref="/koleksion/me-te-shitura"
+        title="Teknologji & Gadgets"
+        products={techShelf}
+        viewAllHref="/koleksion/teknologji"
       />
 
       <div className="h-[40px] md:h-[60px]" />
 
-      {/* Recently viewed products */}
-      <RecentlyViewed />
+      {/* Home & kitchen shelf — distinct from the tech shelf */}
+      <ProductCarousel
+        title="Shtëpi & Kuzhinë"
+        products={homeShelf}
+        viewAllHref="/koleksion/shtepi-kuzhine"
+      />
 
       <div className="h-[40px] md:h-[60px]" />
 
@@ -114,11 +149,11 @@ export default async function HomePage() {
       <PromoCards
         cards={[
           {
-            title: "Teknologji & Gadgets",
-            subtitle: "Pajisje smart për çdo ditë — organizohu, argëtohu dhe simplifikohu",
-            href: "/koleksion/teknologji",
-            bgColor: "#E0EBF5",
-            imageUrl: "https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=800&q=80&auto=format&fit=crop",
+            title: "Bukuri & Kujdes",
+            subtitle: "Kujdesu për veten — produkte bukurie që i do çdo ditë",
+            href: "/koleksion/bukuri-kujdes",
+            bgColor: "#F5E0EA",
+            imageUrl: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=800&q=80&auto=format&fit=crop",
           },
           {
             title: "Fëmijë & Familje",
@@ -129,6 +164,29 @@ export default async function HomePage() {
           },
         ]}
       />
+
+      <div className="h-[40px] md:h-[60px]" />
+
+      {/* Beauty shelf */}
+      <ProductCarousel
+        title="Bukuri & Kujdes"
+        products={beautyShelf}
+        viewAllHref="/koleksion/bukuri-kujdes"
+      />
+
+      <div className="h-[40px] md:h-[60px]" />
+
+      {/* Bargain shelf — cheapest-first, great COD add-ons */}
+      <ProductCarousel
+        title="Çmime që nuk i refuzon dot — nën 10€"
+        products={bargainShelf}
+        viewAllHref="/koleksion/nen-10"
+      />
+
+      <div className="h-[40px] md:h-[60px]" />
+
+      {/* Recently viewed products */}
+      <RecentlyViewed />
 
       <div className="h-[20px]" />
 
