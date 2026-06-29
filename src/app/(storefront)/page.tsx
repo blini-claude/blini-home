@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getNewArrivals, getActiveProducts } from "@/lib/queries";
+import { getActiveProducts } from "@/lib/queries";
 import { HeroBanner } from "@/components/storefront/hero-banner";
 import { CategoryBubbles } from "@/components/storefront/category-bubbles";
 import { ProductCarousel } from "@/components/storefront/product-carousel";
@@ -38,20 +38,29 @@ export default async function HomePage() {
   // Pull each shelf from its OWN collection with a different sort, then dedupe
   // across shelves so the same product never shows up twice on the homepage.
   const [
-    newArrivals,
+    premiumRaw,
     techRaw,
     homeRaw,
     beautyRaw,
     bargainRaw,
     settings,
   ] = await Promise.all([
-    getNewArrivals(14),
-    getActiveProducts({ collectionSlug: "teknologji", limit: 24, sortBy: "price-desc" }).then((r) => r.products),
+    // Hero shelf: the most premium, best-looking pieces (high price, real photos).
+    getActiveProducts({ minPrice: 150, limit: 80, sortBy: "price-desc" }).then((r) => r.products),
+    getActiveProducts({ collectionSlug: "teknologji", limit: 32, sortBy: "price-desc" }).then((r) => r.products),
     getActiveProducts({ collectionSlug: "shtepi-kuzhine", limit: 24, sortBy: "newest" }).then((r) => r.products),
     getActiveProducts({ collectionSlug: "bukuri-kujdes", limit: 24, sortBy: "newest" }).then((r) => r.products),
     getActiveProducts({ collectionSlug: "nen-10", limit: 24, sortBy: "price-asc" }).then((r) => r.products),
     getSiteSettings(),
   ]);
+
+  // Lead with premium products that have more than one photo (they look richer),
+  // then fall back to the rest of the premium pool to guarantee a full shelf.
+  const richEnough = (p: { images?: string[] | null }) => (p.images?.length ?? 0) >= 2;
+  const premiumOrdered = [
+    ...premiumRaw.filter(richEnough),
+    ...premiumRaw.filter((p) => !richEnough(p)),
+  ];
 
   // Greedy dedupe in display order: a product claimed by an earlier shelf is
   // dropped from every later shelf, then each shelf is capped at 12 items.
@@ -66,7 +75,7 @@ export default async function HomePage() {
     }
     return out;
   };
-  const newArrivalShelf = take12(newArrivals);
+  const newArrivalShelf = take12(premiumOrdered);
   const techShelf = take12(techRaw);
   const homeShelf = take12(homeRaw);
   const beautyShelf = take12(beautyRaw);
@@ -91,11 +100,11 @@ export default async function HomePage() {
 
       <div className="h-[40px] md:h-[50px]" />
 
-      {/* "Shop new arrivals!" carousel */}
+      {/* Premium hero shelf — most expensive, best-looking pieces */}
       <ProductCarousel
-        title="Të rejat e javës!"
+        title="Të zgjedhurat premium ✨"
         products={newArrivalShelf}
-        viewAllHref="/koleksion/te-rejat"
+        viewAllHref="/koleksion/teknologji"
       />
 
       <div className="h-[40px] md:h-[60px]" />
