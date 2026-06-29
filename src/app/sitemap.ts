@@ -36,7 +36,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }),
       db.product.findMany({
         where: { isActive: true },
-        select: { slug: true, updatedAt: true },
+        select: { slug: true, updatedAt: true, images: true, thumbnail: true },
         orderBy: { updatedAt: "desc" },
         take: 5000,
       }),
@@ -51,11 +51,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       });
     }
     for (const p of products) {
+      const imgs = (p.images?.length ? p.images : p.thumbnail ? [p.thumbnail] : [])
+        .map((i) => (i.startsWith("http") ? i : `${BASE_URL}${i.startsWith("/") ? "" : "/"}${i}`))
+        .slice(0, 5);
       entries.push({
         url: `${BASE_URL}/produkt/${p.slug}`,
         lastModified: p.updatedAt,
         changeFrequency: "weekly",
         priority: 0.7,
+        ...(imgs.length ? { images: imgs } : {}),
       });
     }
   } catch {

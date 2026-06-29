@@ -158,7 +158,65 @@ export function collectionMetadata(c: SeoCollection, productCount?: number): Met
   };
 }
 
+/**
+ * Keyword-rich, indexable Albanian intro copy for a category/collection page.
+ * Category landing pages need real text to rank for buying-intent searches
+ * like "blej <category> online Kosovë" / "<category> me pagesë në dorë".
+ * Returns short paragraphs.
+ */
+export function collectionIntro(
+  c: { title: string; description?: string | null },
+  productCount?: number
+): string[] {
+  if (c.description?.trim() && c.description.trim().length > 80) {
+    return c.description.trim().split(/\n{2,}/).slice(0, 3);
+  }
+  const t = c.title.trim();
+  const tl = t.toLowerCase();
+  const count = productCount ? `${productCount}+ ` : "";
+  return [
+    `Bli ${tl} online në Kosovë te ${BRAND}. Zgjidh nga ${count}produkte ${tl} ` +
+      `me çmimet më të mira, pagesë në dorë (COD) dhe dërgesë e shpejtë 1–3 ditë në Prishtinë, ` +
+      `Pejë, Prizren, Gjakovë, Ferizaj e në të gjithë Kosovën.`,
+    `Te ${BRAND} gjen ${tl} cilësore nga markat më të njohura, me kthim falas brenda 14 ditësh ` +
+      `dhe mbështetje në shqip. Porosit ${tl} sot dhe paguaj kur ta marrësh në dorë — pa rrezik, pa parapagesë.`,
+  ];
+}
+
+/** Default store-wide FAQ (COD / shipping / returns) — drives FAQ rich snippets. */
+export const STORE_FAQS: { q: string; a: string }[] = [
+  {
+    q: "A mund të paguaj kur ta marr produktin në dorë?",
+    a: `Po. ${BRAND} ofron pagesë në dorë (COD) në të gjithë Kosovën — paguan vetëm kur porosia të arrijë te ti, pa parapagesë.`,
+  },
+  {
+    q: "Sa zgjat dërgesa?",
+    a: "Dërgesa është e shpejtë, zakonisht brenda 1–3 ditëve pune në të gjithë Kosovën. Çmimi i transportit shfaqet gjatë porosisë.",
+  },
+  {
+    q: "A mund ta kthej produktin nëse nuk jam i kënaqur?",
+    a: "Po, ke kthim falas brenda 14 ditësh nga marrja e produktit. Na kontakto dhe e zgjidhim menjëherë.",
+  },
+  {
+    q: "Si mund të porosis?",
+    a: `Zgjidh produktin, shto në shportë dhe plotëso porosinë me emër, numër telefoni dhe adresë. Ekipi i ${BRAND} të kontakton për konfirmim.`,
+  },
+];
+
 // ---------- JSON-LD (structured data for rich results) ----------
+
+/** FAQPage structured data — eligible for FAQ rich results in Google. */
+export function faqJsonLd(items: { q: string; a: string }[]): Record<string, unknown> {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: items.map((it) => ({
+      "@type": "Question",
+      name: it.q,
+      acceptedAnswer: { "@type": "Answer", text: it.a },
+    })),
+  };
+}
 
 export function productJsonLd(
   p: SeoProduct,

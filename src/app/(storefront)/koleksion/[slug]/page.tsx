@@ -7,7 +7,15 @@ import { SortSelect } from "@/components/storefront/sort-select";
 import { CollectionFilters } from "@/components/storefront/collection-filters";
 import { MobileFilterButton } from "@/components/storefront/mobile-filter-button";
 import { JsonLd } from "@/components/seo/json-ld";
-import { collectionMetadata, breadcrumbJsonLd, itemListJsonLd, SITE_URL } from "@/lib/seo";
+import {
+  collectionMetadata,
+  breadcrumbJsonLd,
+  itemListJsonLd,
+  collectionIntro,
+  faqJsonLd,
+  STORE_FAQS,
+  SITE_URL,
+} from "@/lib/seo";
 
 export async function generateMetadata({
   params,
@@ -74,6 +82,7 @@ export default async function CollectionPage({
 
   const totalPages = Math.ceil(total / limit);
   const filterParams = `${tag ? `&tag=${tag}` : ""}${minPriceStr ? `&minPrice=${minPriceStr}` : ""}${maxPriceStr ? `&maxPrice=${maxPriceStr}` : ""}`;
+  const intro = collectionIntro(collection, total);
 
   return (
     <div className="px-5 mx-auto py-6 md:py-10" style={{ maxWidth: 1440 }}>
@@ -84,6 +93,7 @@ export default async function CollectionPage({
             { name: collection.title, url: `${SITE_URL}/koleksion/${slug}` },
           ]),
           itemListJsonLd(products.map((p) => ({ title: p.title, slug: p.slug }))),
+          faqJsonLd(STORE_FAQS),
         ]}
       />
 
@@ -192,6 +202,30 @@ export default async function CollectionPage({
           )}
         </div>
       </div>
+
+      {/* SEO content block — indexable category copy + FAQ rich snippet */}
+      <section className="mt-16 pt-10 border-t border-[rgba(18,18,18,0.08)] max-w-[820px]">
+        <h2 className="text-[20px] md:text-[24px] font-extrabold text-[#062F35] tracking-[-0.5px] mb-4">
+          {collection.title} — bli online në Kosovë me pagesë në dorë
+        </h2>
+        <div className="space-y-3 text-[14px] leading-relaxed text-[rgba(18,18,18,0.7)]">
+          {intro.map((p, i) => (
+            <p key={i}>{p}</p>
+          ))}
+        </div>
+
+        <h2 className="text-[18px] md:text-[20px] font-extrabold text-[#062F35] tracking-[-0.5px] mt-10 mb-4">
+          Pyetje të shpeshta
+        </h2>
+        <div className="divide-y divide-[rgba(18,18,18,0.08)]">
+          {STORE_FAQS.map((f, i) => (
+            <div key={i} className="py-3.5">
+              <h3 className="text-[14px] font-bold text-[#062F35] mb-1">{f.q}</h3>
+              <p className="text-[14px] leading-relaxed text-[rgba(18,18,18,0.7)]">{f.a}</p>
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
