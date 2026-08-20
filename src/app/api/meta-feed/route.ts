@@ -54,7 +54,6 @@ export async function GET() {
       images: true,
       thumbnail: true,
       category: true,
-      stock: true,
       tags: true,
     },
     orderBy: { updatedAt: "desc" },
@@ -62,7 +61,10 @@ export async function GET() {
 
   const items: string[] = [];
   for (const p of products) {
-    const image = p.thumbnail || p.images[0];
+    // Full-size first, thumbnail only as a fallback: the thumbs are 600px and
+    // Meta prefers 1024 for feed images, cropping quality down from what we
+    // already host at 800.
+    const image = p.images[0] || p.thumbnail;
     // No image, no card — Meta drops the item anyway, and a rejected row in the
     // feed report is noise we would have to read every week.
     if (!image) continue;
@@ -87,7 +89,10 @@ export async function GET() {
         `      <g:link>${esc(`${BASE_URL}/produkt/${p.slug}`)}</g:link>`,
         `      <g:image_link>${esc(absolute(image))}</g:image_link>`,
         extra,
-        `      <g:availability>${p.stock > 0 ? "in stock" : "out of stock"}</g:availability>`,
+        // Everything in this feed is already filtered on isActive, which is the
+        // real sellability flag — the `stock` column is hardcoded to 0 by the
+        // importer and means nothing.
+        "      <g:availability>in stock</g:availability>",
         "      <g:condition>new</g:condition>",
         // On sale, Meta wants the crossed-out price in <price> and the real one
         // in <sale_price> — the other way round shows no discount at all.

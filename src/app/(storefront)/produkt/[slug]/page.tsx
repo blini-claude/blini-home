@@ -36,6 +36,7 @@ function toSeoProduct(product: Awaited<ReturnType<typeof getProductBySlug>>) {
     price: Number(product.price),
     compareAtPrice: product.compareAtPrice ? Number(product.compareAtPrice) : null,
     stock: product.stock,
+    isActive: product.isActive,
     images: product.images,
     thumbnail: product.thumbnail,
   };

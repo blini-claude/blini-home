@@ -35,7 +35,10 @@ interface SeoProduct {
   tags?: string[];
   price: number;
   compareAtPrice?: number | null;
+  // Kept for callers that still pass it, but NOT what decides availability —
+  // see the offer below.
   stock?: number;
+  isActive?: boolean;
   images?: string[];
   thumbnail?: string | null;
 }
@@ -273,10 +276,15 @@ export function productJsonLd(
       priceCurrency: "EUR",
       price: p.price.toFixed(2),
       priceValidUntil: nextYear,
+      // `stock` is a dead column: the importer writes a hardcoded 0 for every
+      // product (product-sync.ts) and the real sellability flag is isActive,
+      // set from the source shop's in-stock state. Reading `stock` here told
+      // Google that all 3,300 products were out of stock, which is also why a
+      // Meta catalog built from them would have had nothing to advertise.
       availability:
-        (p.stock ?? 1) > 0
-          ? "https://schema.org/InStock"
-          : "https://schema.org/OutOfStock",
+        p.isActive === false
+          ? "https://schema.org/OutOfStock"
+          : "https://schema.org/InStock",
       itemCondition: "https://schema.org/NewCondition",
       seller: { "@type": "Organization", name: BRAND },
       // Delivery + returns annotations — Google surfaces these in the result.
