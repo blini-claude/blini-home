@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
+import { TrackPurchase } from "./track-purchase";
 
 export default async function ConfirmationPage({
   params,
@@ -17,6 +18,15 @@ export default async function ConfirmationPage({
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-12 text-center">
+      <TrackPurchase
+        orderNumber={order.orderNumber}
+        value={Number(order.total)}
+        items={order.items.map((item) => ({
+          id: item.productId,
+          quantity: item.quantity,
+          price: Number(item.price),
+        }))}
+      />
       <div className="mb-6">
         <svg className="mx-auto text-green-500" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />

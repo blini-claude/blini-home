@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/contexts/cart-context";
+import { metaInitiateCheckout } from "@/lib/meta-pixel";
 
 // All 38 Kosovo municipalities + major cities, sorted alphabetically.
 // Source: OSCE/Kosovo official list of komunat (2025).
@@ -60,6 +61,19 @@ export function CheckoutForm() {
 
   const deliveryFee = subtotal >= 30 ? 0 : 2.5;
   const total = subtotal + deliveryFee;
+
+  // InitiateCheckout, once per visit to this page with a non-empty bag. The
+  // cart loads from storage a tick after mount, so this waits for items rather
+  // than firing on the empty first render.
+  const checkoutFired = useRef(false);
+  useEffect(() => {
+    if (checkoutFired.current || items.length === 0) return;
+    checkoutFired.current = true;
+    metaInitiateCheckout(
+      items.map((i) => ({ id: i.productId, quantity: i.quantity, price: i.price })),
+      total,
+    );
+  }, [items, total]);
 
   // Capture cart server-side when the user has typed enough of a phone but
   // before they submit. Debounced so we don't spam the API on every keystroke.

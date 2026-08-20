@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useCart } from "@/contexts/cart-context";
 import { WishlistButton } from "@/components/storefront/wishlist-button";
+import { metaAddToCart } from "@/lib/meta-pixel";
 
 export function AddToCartButton({
   product,
@@ -49,6 +50,7 @@ export function AddToCartButton({
               thumbnail: product.thumbnail,
               slug: product.slug,
             });
+            metaAddToCart({ id: product.id, title: product.title, price: product.price, quantity });
             setQuantity(1);
           }}
           className="flex-1 bg-[#062F35] text-white py-4 rounded-[8px] text-[15px] font-bold border-2 border-[#062F35] hover:bg-transparent hover:text-[#062F35] transition-colors"
