@@ -33,6 +33,30 @@ function plain(s: string | null | undefined, fallback: string): string {
   return (text.length >= 10 ? text : fallback).slice(0, 4000);
 }
 
+// Most source shops write titles in full caps ("APARAT PËR KAFE TURKE"), which
+// Meta flags on every ingest and renders badly in an ad. Only shouted titles are
+// touched — a normally-cased one is left exactly as the shop wrote it.
+const LOWER_WORDS = new Set(["për", "me", "dhe", "nga", "në", "e", "i", "të", "së", "ose", "a", "sipas"]);
+
+function calmTitle(raw: string): string {
+  const letters = raw.replace(/[^\p{L}]/gu, "");
+  if (letters.length < 6) return raw;
+  const upper = (raw.match(/\p{Lu}/gu) ?? []).length;
+  if (upper / letters.length < 0.7) return raw;
+
+  return raw
+    .toLocaleLowerCase("sq")
+    .split(/(\s+)/)
+    .map((word, i) => {
+      if (!word.trim()) return word;
+      // Codes and sizes stay as they are: "3D", "50ML", "A4".
+      if (/\d/.test(word)) return word.toLocaleUpperCase("sq");
+      if (i > 0 && LOWER_WORDS.has(word)) return word;
+      return word.charAt(0).toLocaleUpperCase("sq") + word.slice(1);
+    })
+    .join("");
+}
+
 function absolute(url: string): string {
   if (/^https?:\/\//i.test(url)) return url;
   return `${BASE_URL}${url.startsWith("/") ? "" : "/"}${url}`;
@@ -84,7 +108,7 @@ export async function GET() {
       [
         "    <item>",
         `      <g:id>${esc(p.id)}</g:id>`,
-        `      <g:title>${esc(p.title.slice(0, 150))}</g:title>`,
+        `      <g:title>${esc(calmTitle(p.title).slice(0, 150))}</g:title>`,
         `      <g:description>${esc(plain(p.description, p.title))}</g:description>`,
         `      <g:link>${esc(`${BASE_URL}/produkt/${p.slug}`)}</g:link>`,
         `      <g:image_link>${esc(absolute(image))}</g:image_link>`,
