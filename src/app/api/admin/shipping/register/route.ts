@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isAdmin } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
 
 export async function POST(req: NextRequest) {
+  if (!(await isAdmin())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { orderId } = await req.json();
 
   const settings = await db.siteSettings.findUnique({ where: { id: "main" } });

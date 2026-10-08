@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.ADMIN_JWT_SECRET || "blini-home-admin-secret-change-me"
-);
+function getJwtSecret(): Uint8Array {
+  const secret = process.env.ADMIN_JWT_SECRET;
+  if (!secret || secret.length < 16) {
+    throw new Error("ADMIN_JWT_SECRET is missing or too short (min 16 chars)");
+  }
+  return new TextEncoder().encode(secret);
+}
 
 // Canonical domain for SEO — every other public hostname 301s here so Google
 // consolidates all ranking signals onto the one brand domain.
@@ -29,7 +33,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/admin/login", request.url));
   }
   try {
-    await jwtVerify(token, JWT_SECRET);
+    await jwtVerify(token, getJwtSecret());
     return NextResponse.next();
   } catch {
     return NextResponse.redirect(new URL("/admin/login", request.url));

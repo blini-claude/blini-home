@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isAdmin } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
 
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  if (!(await isAdmin())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await params;
   const body = await request.json().catch(() => null);
   if (!body || !Array.isArray(body.productIds)) {

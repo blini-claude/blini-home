@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isAdmin } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
+  if (!(await isAdmin())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { searchParams } = new URL(req.url);
   const page = Math.max(1, parseInt(searchParams.get("page") || "1"));
   const limit = 30;
@@ -27,6 +29,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  if (!(await isAdmin())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await req.json();
   await db.subscriber.delete({ where: { id } });
   return NextResponse.json({ ok: true });

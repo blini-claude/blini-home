@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isAdmin } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
 
 function generateOrderNumber(): string {
@@ -16,6 +17,7 @@ function normalizePhone(raw: string): string {
 // WhatsApp and the operator enters the order on their behalf. Skips the
 // blacklist + per-day rate limit that apply to public orders.
 export async function POST(request: NextRequest) {
+  if (!(await isAdmin())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const body = await request.json().catch(() => null);
   if (!body) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
@@ -107,6 +109,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
+  if (!(await isAdmin())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { searchParams } = request.nextUrl;
   const status = searchParams.get("status");
   const city = searchParams.get("city");

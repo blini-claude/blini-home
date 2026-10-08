@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { isAdmin } from "@/lib/admin-auth";
 
 export async function GET() {
+  if (!(await isAdmin())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const collections = await db.collection.findMany({
     orderBy: { sortOrder: "asc" },
     include: { _count: { select: { products: true } } },

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isAdmin } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
 
 function normalizePhone(raw: string): string {
@@ -6,6 +7,7 @@ function normalizePhone(raw: string): string {
 }
 
 export async function GET(req: NextRequest) {
+  if (!(await isAdmin())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { searchParams } = new URL(req.url);
   const page = Math.max(1, parseInt(searchParams.get("page") || "1"));
   const limit = 30;
@@ -31,6 +33,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  if (!(await isAdmin())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const body = await req.json();
   const { phone, reason, notes } = body as { phone: string; reason?: string; notes?: string };
 

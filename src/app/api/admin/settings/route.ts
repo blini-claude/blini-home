@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isAdmin } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
 
 export async function GET() {
+  if (!(await isAdmin())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const settings = await db.siteSettings.upsert({
     where: { id: "main" },
     create: { id: "main" },
@@ -11,6 +13,7 @@ export async function GET() {
 }
 
 export async function PUT(req: NextRequest) {
+  if (!(await isAdmin())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const body = await req.json();
 
   const data: Record<string, unknown> = {};

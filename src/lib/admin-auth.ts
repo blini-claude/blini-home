@@ -1,21 +1,29 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.ADMIN_JWT_SECRET || "blini-home-admin-secret-change-me"
-);
+/**
+ * Admin JWT secret. No fallback: a missing/short secret would make admin
+ * tokens forgeable, so fail loudly instead.
+ */
+export function getJwtSecret(): Uint8Array {
+  const secret = process.env.ADMIN_JWT_SECRET;
+  if (!secret || secret.length < 16) {
+    throw new Error("ADMIN_JWT_SECRET is missing or too short (min 16 chars)");
+  }
+  return new TextEncoder().encode(secret);
+}
 const COOKIE_NAME = "admin-token";
 
 export async function signToken(payload: { id: string; email: string }) {
   return new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setExpirationTime("7d")
-    .sign(JWT_SECRET);
+    .sign(getJwtSecret());
 }
 
 export async function verifyToken(token: string) {
   try {
-    const { payload } = await jwtVerify(token, JWT_SECRET);
+    const { payload } = await jwtVerify(token, getJwtSecret());
     return payload as { id: string; email: string };
   } catch {
     return null;
@@ -54,4 +62,4 @@ export async function isAdmin(): Promise<boolean> {
   return (await getAdminFromCookie()) !== null;
 }
 
-export { COOKIE_NAME, JWT_SECRET };
+export { COOKIE_NAME };

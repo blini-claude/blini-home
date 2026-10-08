@@ -93,6 +93,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
+  if (!(await isAdmin())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { searchParams } = request.nextUrl;
   const search = searchParams.get("search") || "";
   const source = searchParams.get("source");
