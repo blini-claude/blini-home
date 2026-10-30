@@ -91,7 +91,7 @@ export async function syncStore(
   return result;
 }
 
-async function processProduct(
+export async function processProduct(
   scraped: ScrapedProduct,
   downloadImages: boolean,
   result: SyncResult
